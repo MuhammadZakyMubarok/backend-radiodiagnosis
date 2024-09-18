@@ -37,19 +37,24 @@ const RadiographicsValidator = require("./validator/radiographics");
 const diagnoses = require("./api/diagnoses");
 const DiagnosesService = require("./services/postgres/DiagnosesService");
 
+// SatuSehat
+const satuSehat = require("./api/satu-sehat");
+const SatuSehatService = require("./services/satu-sehat/SatuSehatService");
+
 const init = async () => {
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(
-    path.resolve(__dirname, "api/uploads/file/pictures")
+    path.resolve(__dirname, "api/uploads/file/pictures"),
   );
   const patientsService = new PatientsService();
   const radiographicsService = new RadiographicsService();
   const diagnosesService = new DiagnosesService();
+  const satuSehatService = new SatuSehatService();
 
   const server = Hapi.server({
-    port: process.env.PORT || 3001, // Change to a different port
-    host: process.env.HOST || 'localhost',
+    port: process.env.PORT,
+    host: process.env.HOST,
     routes: {
       cors: {
         origin: ["*"],
@@ -129,6 +134,12 @@ const init = async () => {
       options: {
         diagnosesService,
         radiographicsService,
+      },
+    },
+    {
+      plugin: satuSehat,
+      options: {
+        satuSehatService,
       },
     },
   ]);
