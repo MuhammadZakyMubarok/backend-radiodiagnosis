@@ -86,6 +86,8 @@ class UsersHandler {
           doctor = Number(row.total_rows);
         } else if (row.role === "radiographer") {
           radiographer = Number(row.total_rows);
+        }else if (row.role === "patient") {
+          radiographer = Number(row.total_rows);
         }
         total += Number(row.total_rows);
       });

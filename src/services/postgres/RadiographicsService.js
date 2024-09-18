@@ -421,7 +421,7 @@ class RadiographicsService {
 
     const { role } = result.rows[0];
 
-    if (!(role === "radiographer" || role === "doctor")) {
+    if (!(role === "radiographer" || role === "doctor" || role=== "patient")) {
       throw new AuthenticationError("Anda tidak memilki akeses");
     }
   }

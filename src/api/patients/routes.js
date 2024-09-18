@@ -7,6 +7,15 @@ const routes = (handler) => [
       auth: 'radiodiagnostic_jwt',
     },
   },
+
+  {
+    method: 'POST',
+    path: '/patients/register',
+    handler: handler.postPatientRegisterHandler.bind(handler),
+    options: {
+      auth: false,
+    },
+  },
   {
     method: 'GET',
     path: '/patients/detail/{patientId}',
@@ -19,6 +28,14 @@ const routes = (handler) => [
     method: 'GET',
     path: '/patients/all',
     handler: handler.getAllPatientsHandler,
+    options: {
+      auth: 'radiodiagnostic_jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/patients/result-diagnoses',
+    handler: handler.getAllResultHandler.bind(handler),
     options: {
       auth: 'radiodiagnostic_jwt',
     },
