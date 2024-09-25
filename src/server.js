@@ -38,8 +38,10 @@ const diagnoses = require("./api/diagnoses");
 const DiagnosesService = require("./services/postgres/DiagnosesService");
 
 // SatuSehat
-const satuSehat = require("./api/satu-sehat");
-const SatuSehatService = require("./services/satu-sehat/SatuSehatService");
+const satuSehatAuthentication = require('./api/satu-sehat/authentications');
+const SatuSehatAuthenticationService = require("./services/satu-sehat/AuthenticationsService");
+const satuSehatPatient = require('./api/satu-sehat/patients');
+const SatuSehatPatientsService = require("./services/satu-sehat/PatientsService");
 
 const init = async () => {
   const usersService = new UsersService();
@@ -50,7 +52,10 @@ const init = async () => {
   const patientsService = new PatientsService();
   const radiographicsService = new RadiographicsService();
   const diagnosesService = new DiagnosesService();
-  const satuSehatService = new SatuSehatService();
+
+  // Satu sehat API
+  const satuSehatAuthenticationService = new SatuSehatAuthenticationService();
+  const satuSehatPatientService = new SatuSehatPatientsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -137,9 +142,15 @@ const init = async () => {
       },
     },
     {
-      plugin: satuSehat,
+      plugin: satuSehatAuthentication,
       options: {
-        satuSehatService,
+        satuSehatAuthenticationService,
+      },
+    },
+    {
+      plugin: satuSehatPatient,
+      options: {
+        satuSehatPatientService,
       },
     },
   ]);
