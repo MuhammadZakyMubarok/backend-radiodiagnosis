@@ -1,5 +1,5 @@
-// src/api/satu-sehat/handler.js
-class SatuSehatHandler {
+// src/api/satu-sehat/authentications/handler.js
+class SatuSehatAuthenticationHandler {
   constructor(service) {
     this._service = service;
 
@@ -8,6 +8,7 @@ class SatuSehatHandler {
 
   async getAccessTokenHandler(request, h) {
     try {
+      // eslint-disable-next-line camelcase
       const { client_id, client_secret } = request.payload;
 
       // Pass the parameters to the service for fetching the token
@@ -26,4 +27,4 @@ class SatuSehatHandler {
   }
 }
 
-module.exports = SatuSehatHandler;
+module.exports = SatuSehatAuthenticationHandler;

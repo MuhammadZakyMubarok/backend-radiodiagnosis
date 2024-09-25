@@ -1,9 +1,9 @@
-// src/api/satu-sehat/route.js
+// src/api/satu-sehat/patients/route.js
 const routes = (handler) => [
   {
-    method: 'POST',
-    path: '/satu-sehat/access-token',
-    handler: handler.getAccessTokenHandler,
+    method: 'GET',
+    path: '/satu-sehat/patients/Patient/{patientId}',
+    handler: handler.getPatientByIdHandler,
     options: {
       auth: false, // Adjust according to your authentication needs
     },
