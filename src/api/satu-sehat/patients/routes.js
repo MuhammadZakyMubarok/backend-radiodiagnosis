@@ -2,8 +2,11 @@
 const routes = (handler) => [
   {
     method: 'GET',
-    path: '/satu-sehat/patients/Patient/{patientId}',
+    path: '/satu-sehat/Patient/{patientId}',
     handler: handler.getPatientByIdHandler,
+    options: {
+      auth: 'satu_sehat_bearer',
+    },
   },
 ];
 

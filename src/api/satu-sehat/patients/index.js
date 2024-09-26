@@ -8,7 +8,5 @@ module.exports = {
   register: async (server, { satuSehatPatientService }) => {
     const satuSehatPatientHandler = new SatuSehatPatientHandler(satuSehatPatientService);
     server.route(routes(satuSehatPatientHandler));
-    // Add auth bearer
-    server.auth.default('satu_sehat_bearer');
   },
 };
