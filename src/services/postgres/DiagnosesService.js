@@ -33,12 +33,11 @@ class DiagnosesService {
 
       const diagnoseQuery = {
         text: `INSERT INTO diagnoses (id, tooth_number, system_diagnosis, radiographic_id)
-                    VALUES($1, $2, $3, $4) RETURNING id, tooth_number, system_diagnosis, radiographic_id`,
+               VALUES($1, $2, $3, $4) RETURNING id, tooth_number, system_diagnosis, radiographic_id`,
         values: [
           diagnoseId,
           toothNumber,
           systemDiagnosis,
-          isCorrect,
           radiographicId,
         ],
       };
@@ -97,7 +96,7 @@ class DiagnosesService {
 
     if (result.rowCount) {
       const diagnoseQuery = {
-        text: `UPDATE diagnoses SET manual_diagnosis = $1, is_corerct = 1, WHERE tooth_number = $2 AND history_id = $3 RETURNING id, tooth_number, manual_diagnosis`,
+        text: `UPDATE diagnoses SET manual_diagnosis = $1, is_corerct = 1 WHERE tooth_number = $2 AND history_id = $3 RETURNING id, tooth_number, manual_diagnosis`,
         values: [manualDiagnosis, toothNumber, historyId],
       };
 
@@ -111,7 +110,7 @@ class DiagnosesService {
 
       const diagnoseQuery = {
         text: `INSERT INTO diagnoses (id, is_corerct, tooth_number, manual_diagnosis, history_id)
-                    VALUES($1, 1, $2, $3, $4) RETURNING id, tooth_number, system_diagnosis, history_id`,
+               VALUES($1, 1, $2, $3, $4) RETURNING id, tooth_number, manual_diagnosis, history_id`,
         values: [diagnoseId, toothNumber, manualDiagnosis, historyId],
       };
 
