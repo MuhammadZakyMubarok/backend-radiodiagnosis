@@ -33,6 +33,32 @@ class PatientsHandler {
     }
   }
 
+  async postPatientRegisterHandler(request, h) {
+    try {
+      const { idNumber } = request.payload;
+
+      // Verifikasi ID number dan pendaftaran pasien
+      await this._service.verifyNewid_number(idNumber);
+      const patientId = await this._service.regisPatient(request.payload);
+
+      return h
+        .response({
+          status: "success",
+          message: "Anda berhasil register sebagai pasien",
+          data: patientId,
+        })
+        .code(201);
+    } catch (error) {
+      console.error("Registration Error:", error);
+      return h
+        .response({
+          status: "fail",
+          message: error.message || "Pendaftaran gagal, silakan coba lagi.",
+        })
+        .code(500);
+    }
+  }
+
   async getAllPatientHandler({ auth, query }) {
     try {
       const { id: credentialId } = auth.credentials;
@@ -45,6 +71,48 @@ class PatientsHandler {
       };
     } catch (error) {
       return error;
+    }
+  }
+
+  async getAllResultHandler({ auth, query }) {
+    try {
+      // Periksa jika auth.credentials tidak null sebelum destructuring
+      if (!auth.credentials) {
+        throw new Error("Authentication credentials are missing");
+      }
+
+      const { id: credentialId } = auth.credentials;
+
+      // Validasi parameter query secara manual
+      const { userId, month, limit, offset, search, verified } = query;
+      const parsedLimit = parseInt(limit, 10) || 10;
+      const parsedOffset = parseInt(offset, 10) || 0;
+      const parsedMonth = parseInt(month, 10) || null;
+      const parsedVerified =
+        verified === "true" ? 1 : verified === "false" ? 0 : null;
+
+      // Verifikasi user access
+      await this._service.verifyUserAccess(credentialId);
+
+      // Panggil metode service dengan parameter query
+      const result = await this._service.getAllResult(
+        credentialId,
+        parsedMonth,
+        parsedLimit,
+        parsedOffset,
+        search,
+        parsedVerified
+      );
+
+      return {
+        status: "success",
+        data: result,
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        message: error.message || "An error occurred",
+      };
     }
   }
 
@@ -61,7 +129,8 @@ class PatientsHandler {
         offset,
         search
       );
-      const {total, verified, unverified, thisDay, thisMonth} = await this._service.getPatientTotalRows();
+      const { total, verified, unverified, thisDay, thisMonth } =
+        await this._service.getPatientTotalRows();
 
       return {
         status: "success",

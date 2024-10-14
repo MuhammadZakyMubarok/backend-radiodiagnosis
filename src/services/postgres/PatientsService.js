@@ -4,6 +4,7 @@ const { Pool } = require("pg");
 const InvariantError = require("../../exceptions/InvariantError");
 const NotFoundError = require("../../exceptions/NotFoundError");
 const AuthenticationError = require("../../exceptions/AuthenticationError");
+const bcrypt = require("bcrypt");
 
 class PatientsService {
   constructor() {
@@ -56,6 +57,93 @@ class PatientsService {
       throw new InvariantError("Pasien gagal ditambahkan");
     }
     return result.rows[0];
+  }
+
+  async regisPatient({
+    fullname,
+    email,
+    password,
+    phone_number,
+    gender,
+    address,
+    province,
+    city,
+    postal_code,
+    religion,
+    born_location,
+    born_date,
+  }) {
+    // Cek apakah email sudah ada di database
+    const emailCheckQuery = {
+      text: `SELECT id FROM users WHERE email = $1`,
+      values: [email],
+    };
+
+    const emailCheckResult = await this._pool.query(emailCheckQuery);
+
+    if (emailCheckResult.rowCount > 0) {
+      throw new InvariantError(
+        "Email sudah digunakan. Silakan gunakan email lain."
+      );
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10); // angka 10 adalah salt rounds
+
+    // Generate 5-digit random NIP
+    const nip = Math.floor(10000 + Math.random() * 90000).toString();
+    const id = `user-${nanoid(16)}`;
+
+    // Insert data into 'user' table
+    const userQuery = {
+      text: `INSERT INTO users (id, fullname, email, password, role, phone_number, gender, address, province, city, postal_code, nip)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, fullname, email, nip`,
+      values: [
+        id,
+        fullname,
+        email,
+        hashedPassword, // Simpan password yang sudah di-hash
+        "patient",
+        phone_number,
+        gender,
+        address,
+        province,
+        city,
+        postal_code,
+        nip,
+      ],
+    };
+
+    const userResult = await this._pool.query(userQuery);
+
+    if (!userResult.rowCount) {
+      throw new InvariantError("User gagal ditambahkan");
+    }
+
+    // Insert data into 'patients' table
+    const patientQuery = {
+      text: `INSERT INTO patients (id, fullname, medic_number, gender, address, phone_number, born_location, born_date, religion, id_number, referral_origin)
+                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, 'indonesia', NULL) RETURNING id, fullname, medic_number`,
+      values: [
+        id,
+        fullname,
+        nip,
+        gender,
+        address,
+        phone_number,
+        born_location,
+        born_date,
+        religion,
+      ],
+    };
+
+    const patientResult = await this._pool.query(patientQuery);
+
+    if (!patientResult.rowCount) {
+      throw new InvariantError("Pasien gagal register");
+    }
+
+    return { user: userResult.rows[0], patient: patientResult.rows[0] };
   }
 
   async getPatientTotalRows() {
@@ -135,6 +223,84 @@ class PatientsService {
     }
 
     return result.rows;
+  }
+
+  async getAllResult(userId, month, limit, offset, verified) {
+    let queryText = `
+      SELECT 
+        h.id,
+        h.upload_date,
+        h.status,
+        h.panoramik_picture,
+        h.panoramik_check_date,
+        h.system_check_date,
+        h.updated_at,
+        h.created_at,
+        u1.fullname AS doctor_fullname,
+        u2.fullname AS radiographer_fullname,
+        p.medic_number
+      FROM histories h
+      LEFT JOIN users u1 ON h.doctor_id = u1.id
+      LEFT JOIN users u2 ON h.radiographer_id = u2.id
+      LEFT JOIN patients p ON h.patient_id = p.id
+    `;
+  
+    const queryParams = [];
+  
+    if (userId) {
+      const userIdParam = `%${userId.toLowerCase()}%`;
+      queryText += ` WHERE LOWER(p.id) LIKE $${queryParams.length + 1} `;
+      queryParams.push(userIdParam);
+    }
+  
+    if (verified !== undefined && verified !== null) {
+      if (queryParams.length > 0) {
+        queryText += ` AND h.status = $${queryParams.length + 1} `;
+      } else {
+        queryText += ` WHERE h.status = $${queryParams.length + 1} `;
+      }
+      queryParams.push(verified);
+    }
+  
+    if (month !== undefined && month !== null) {
+      if (queryParams.length > 0) {
+        queryText += ` AND EXTRACT(MONTH FROM h.upload_date) = $${queryParams.length + 1} `;
+      } else {
+        queryText += ` WHERE EXTRACT(MONTH FROM h.upload_date) = $${queryParams.length + 1} `;
+      }
+      queryParams.push(month);
+    }
+  
+    queryText += `
+      ORDER BY h.upload_date DESC
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
+    `;
+    queryParams.push(limit, offset);
+  
+    console.log("Executing query:", queryText); // Debugging
+    console.log("With parameters:", queryParams); // Debugging
+  
+    const query = {
+      text: queryText,
+      values: queryParams,
+    };
+  
+    try {
+      const result = await this._pool.query(query);
+      console.log("Query result:", result.rows); // Debugging
+  
+      if (result.rowCount === 0) {
+        return { data: [], totalPages: 0 }; // No data found
+      }
+  
+      return {
+        data: result.rows,
+        totalPages: Math.ceil(result.rowCount / limit),
+      };
+    } catch (error) {
+      console.error("Database query error:", error); // Debugging
+      throw new Error("Database query error");
+    }
   }
 
   async getAllPatients(limit, offset, search) {
@@ -270,7 +436,7 @@ class PatientsService {
 
     const { role } = result.rows[0];
 
-    if (!(role === "radiographer" || role === "doctor")) {
+    if (!(role === "radiographer" || role === "doctor" || role === "patient")) {
       throw new AuthenticationError("Anda tidak memilki akeses");
     }
   }
@@ -288,7 +454,7 @@ class PatientsService {
 
     const { role } = result.rows[0];
 
-    if (role !== "radiographer") {
+    if (role !== "radiographer" || role !== "patient") {
       throw new AuthenticationError("Anda tidak memilki akeses");
     }
   }

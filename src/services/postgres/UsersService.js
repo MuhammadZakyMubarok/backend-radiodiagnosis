@@ -58,12 +58,12 @@ class UsersService {
 
   async getUserTotalRows(search) {
     let queryText =
-      "SELECT COUNT(*) as total_rows, role FROM users WHERE role IN ('doctor','radiographer') group by role";
+      "SELECT COUNT(*) as total_rows, role FROM users WHERE role IN ('doctor','radiographer','patient) group by role";
 
     let queryParams = [];
     if (search) {
       queryText =
-        "SELECT COUNT(*) as total_rows, role FROM users WHERE (LOWER(fullname) LIKE $1 OR LOWER(nip) LIKE $1) AND role IN ('doctor','radiographer') group by role";
+        "SELECT COUNT(*) as total_rows, role FROM users WHERE (LOWER(fullname) LIKE $1 OR LOWER(nip) LIKE $1) AND role IN ('doctor','radiographer','patient') group by role";
       queryParams = [`%${search.toLowerCase()}%`];
     }
 
@@ -84,13 +84,13 @@ class UsersService {
 
     if (search) {
       queryText +=
-        " WHERE (LOWER(fullname) LIKE $3 OR LOWER(nip) LIKE $3) AND role IN ('doctor','radiographer')";
+        " WHERE (LOWER(fullname) LIKE $3 OR LOWER(nip) LIKE $3) AND role IN ('doctor','radiographer','patient)";
       queryParams.push(`%${search.toLowerCase()}%`);
     } else {
-      queryText += " WHERE role IN ('doctor','radiographer')";
+      queryText += "WHERE role IN ('doctor','radiographer','patient')";
     }
 
-    queryText += " LIMIT $1 OFFSET $2";
+    queryText += "LIMIT $1 OFFSET $2";
 
     const query = {
       text: queryText,
