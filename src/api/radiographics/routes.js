@@ -15,7 +15,7 @@ const routes = (handler) => [
   },
   {
     method: "GET",
-    path: "/radiographics/detail/Z{radiographicId}",
+    path: "/radiographics/detail/{radiographicId}",
     handler: handler.getRadiographicHandler,
     options: {
       auth: "radiodiagnostic_jwt",
