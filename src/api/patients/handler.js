@@ -33,6 +33,35 @@ class PatientsHandler {
     }
   }
 
+  async changeStatusPatientHandler({ params, auth }, h) {
+    try {
+      const { id: credentialId } = auth.credentials;
+      const { patientId } = params;
+
+      // Verifikasi akses pengguna
+      await this._service.verifyUserAccessRadiographer(credentialId);
+
+      // Ambil status_user saat ini dari database
+      const currentStatus = await this._service.getPatientStatus(patientId);
+
+      // Tentukan status baru berdasarkan nilai status saat ini
+      const newStatus = currentStatus === 1 ? 0 : 1;
+
+      // Perbarui status_user di database
+      await this._service.updatePatientStatus(patientId, newStatus);
+
+      const response = h.response({
+        status: "success",
+        message: "Status pasien berhasil diubah",
+        data: { patientId, newStatus },
+      });
+      response.code(200);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
   async postPatientRegisterHandler(request, h) {
     try {
       const { idNumber } = request.payload;

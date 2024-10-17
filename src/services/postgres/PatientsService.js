@@ -303,6 +303,21 @@ class PatientsService {
     }
   }
 
+  async updatePatientStatus(patientId, newStatus) {
+    const query = {
+      text: 'UPDATE patients SET status_user = $1 WHERE id = $2 RETURNING id',
+      values: [newStatus, patientId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError("Pasien tidak ditemukan");
+    }
+
+    return result.rows[0].id;
+  }
+
   async getAllPatients(limit, offset, search) {
     let queryText = `SELECT patients.*, users.fullname as radiographer, latest.upload_date, latest.panoramik_check_date
     FROM patients
