@@ -1,0 +1,46 @@
+# Virtual Environment
+venv/
+myenv/
+
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Logs and Temporary Files
+*.log
+*.swp
+.vscode/
+.idea/
+
+# Configuration Files
+.env
+
+# Database Files (if applicable)
+*.sqlite
+*.db
+
+# Dependency Lock Files
+# requirements.txt
+Pipfile.lock
+poetry.lock
+
+# Sensitive or Private Information (Do not commit these!)
+.env
+
+# Output and Build Files
+build/
+dist/
+*.egg-info/
+
+# User-specific Files
+.vscode/
+.idea/
+.vscode-server/
+
+# Cache and Temporary Files
+__pycache__/
+*.pyc
+
+# System Files (macOS)
+.DS_Store
