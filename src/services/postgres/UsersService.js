@@ -58,7 +58,7 @@ class UsersService {
 
   async getUserTotalRows(search) {
     let queryText =
-      "SELECT COUNT(*) as total_rows, role FROM users WHERE role IN ('doctor','radiographer','patient) group by role";
+      "SELECT COUNT(*) as total_rows, role FROM users WHERE role IN ('doctor','radiographer','patient') group by role";
 
     let queryParams = [];
     if (search) {
@@ -77,20 +77,48 @@ class UsersService {
     return result.rows;
   }
 
+  // async getAllUsers(limit, offset, search) {
+  //   let queryText = "SELECT * FROM users";
+
+  //   const queryParams = [limit, offset];
+
+  //   if (search) {
+  //     queryText +=
+  //       " WHERE (LOWER(fullname) LIKE $3 OR LOWER(nip) LIKE $3) AND role IN ('doctor','radiographer','patient')";
+  //     queryParams.push(`%${search.toLowerCase()}%`);
+  //   } else {
+  //     queryText += "WHERE role IN ('doctor','radiographer','patient')";
+  //   }
+
+  //   queryText += "LIMIT $1 OFFSET $2";
+
+  //   const query = {
+  //     text: queryText,
+  //     values: queryParams,
+  //   };
+
+  //   const result = await this._pool.query(query);
+
+  //   if (!result.rowCount) {
+  //     throw new NotFoundError("User tidak ditemukan");
+  //   }
+
+  //   return result.rows;
+  // }
+
   async getAllUsers(limit, offset, search) {
-    let queryText = "SELECT * FROM users";
+    let queryText = "SELECT * FROM users WHERE role IN ('doctor', 'radiographer', 'patient')";
 
     const queryParams = [limit, offset];
 
+    // Jika ada parameter pencarian
     if (search) {
-      queryText +=
-        " WHERE (LOWER(fullname) LIKE $3 OR LOWER(nip) LIKE $3) AND role IN ('doctor','radiographer','patient)";
+      queryText += " AND (LOWER(fullname) LIKE $3 OR LOWER(nip) LIKE $3)";
       queryParams.push(`%${search.toLowerCase()}%`);
-    } else {
-      queryText += "WHERE role IN ('doctor','radiographer','patient')";
     }
 
-    queryText += "LIMIT $1 OFFSET $2";
+    // Klausa LIMIT dan OFFSET
+    queryText += " LIMIT $1 OFFSET $2";
 
     const query = {
       text: queryText,
