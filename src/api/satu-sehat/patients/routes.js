@@ -8,6 +8,14 @@ const routes = (handler) => [
       auth: 'satu_sehat_bearer',
     },
   },
+  {
+    method: 'POST',
+    path: '/satu-sehat/Patient',
+    handler: handler.registerPatientHandler,
+    options: {
+      auth: 'satu_sehat_bearer',
+    },
+  },
 ];
 
 module.exports = routes;

@@ -23,6 +23,23 @@ class SatuSehatAuthenticationHandler {
       return error;
     }
   }
+
+  async registerPatientHandler(patientData) {
+    // Validasi dan penyimpanan data
+    if (!patientData.resourceType || patientData.resourceType !== 'Patient') {
+      throw new Error('Invalid resourceType, must be "Patient"');
+    }
+
+    // Simpan data pasien
+    const newPatient = {
+      id: this._patients.length + 1,
+      ...patientData,
+    };
+
+    this._patients.push(newPatient);
+    return newPatient;
+  }
+  
 }
 
 module.exports = SatuSehatAuthenticationHandler;
