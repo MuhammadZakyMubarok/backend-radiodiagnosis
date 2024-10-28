@@ -1,0 +1,152 @@
+[33mcommit 04c0b71425b9687338df3993651e846a4dc05534[m[33m ([m[1;36mHEAD -> [m[1;32mdoktergigi[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 59c6b8c 31bd062
+Author: Imanuddin Ardian Hermawan <53366745+ardianhermawan17@users.noreply.github.com>
+Date:   Tue Oct 15 14:34:10 2024 +0700
+
+    Merge pull request #9 from AliifRahman/dev-ardian
+    
+    Dev ardian
+
+[33mcommit 31bd062ceea41fc28b464cff75fd9c391c810650[m
+Merge: c6ed41f 59c6b8c
+Author: Imanuddin Ardian Hermawan <53366745+ardianhermawan17@users.noreply.github.com>
+Date:   Tue Oct 15 14:33:52 2024 +0700
+
+    Merge branch 'main' into dev-ardian
+
+[33mcommit 59c6b8c94dcae70cc29796742aa292d6e31882d9[m
+Author: Alif Rahman <aliifrahman30@@example.com>
+Date:   Mon Oct 14 11:09:31 2024 +0700
+
+    fix typo
+
+[33mcommit 7e59896bdce53a472725b0563fdd367eb20c2da6[m
+Merge: 7c9d465 0c1de86
+Author: AliifRahman <59392823+AliifRahman@users.noreply.github.com>
+Date:   Mon Oct 14 09:08:36 2024 +0700
+
+    Merge pull request #8 from AliifRahman/ardianbaru
+    
+    Ardianbaru
+
+[33mcommit 0c1de86c4e5a57f1fb29519a42b5a1a0d088ab3b[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Thu Sep 26 15:17:21 2024 +0700
+
+    Refactor: Change route from '/patients/Patient' to '/Patient' (matching satu sehat)
+
+[33mcommit 48dd4c8dd0f34c6f3f422f2bd933fd66ecf33605[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 25 22:51:06 2024 +0700
+
+    Feat: Add validation to check if The request include bearer token
+
+[33mcommit 79056654001f5bf01d87f7ea6230762917fdf5ed[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 25 22:39:24 2024 +0700
+
+    Major Refactoring & Feat: Add new Proxy for satu-sehat module Patient
+
+[33mcommit 53cedfd2c4d04e6c2a2b2a015a6475b196fb3863[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 18 20:38:41 2024 +0700
+
+    Refactor: Add API satu sehat
+
+[33mcommit 9607122d52fe59be5ed17ed90d75a87adfeeccb6[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 18 20:37:50 2024 +0700
+
+    Refactor: Add proxy for bypassing Satu - sehat
+
+[33mcommit 7c9d4653c66b0414aa660fb1c8b5d5b5cbcc8944[m
+Merge: 52cb223 10afd7d
+Author: AliifRahman <59392823+AliifRahman@users.noreply.github.com>
+Date:   Sun Oct 13 19:55:42 2024 +0700
+
+    Merge pull request #7 from AliifRahman/doktergigibaru
+    
+    iterasi 1 sprint 2
+
+[33mcommit 10afd7d8a09bdbd0582c915b40c7660c2524eced[m
+Author: Tsania Ursila <73732412+Tsaniaa@users.noreply.github.com>
+Date:   Sun Sep 15 23:10:15 2024 +0700
+
+    iterasi 1 sprint 2
+
+[33mcommit c6ed41fafe57274ec52ab7fefb24bbe56af2e6de[m
+Merge: 97b3c86 085fbf2
+Author: AliifRahman <59392823+AliifRahman@users.noreply.github.com>
+Date:   Fri Oct 4 19:00:17 2024 +0700
+
+    Merge branch 'main' into dev-ardian
+
+[33mcommit 085fbf21bf8d6163dceba1f9ee6b3a5b58a5d031[m
+Merge: e78ce90 10dabd1
+Author: AliifRahman <59392823+AliifRahman@users.noreply.github.com>
+Date:   Wed Oct 2 15:21:18 2024 +0700
+
+    Merge pull request #4 from AliifRahman/doktergigi
+    
+    merging from branch dokter gigi, system detection removal and manual interpretation by doctor
+
+[33mcommit 10dabd19764b28cad0b2dfca9599991adb0cb8e5[m
+Merge: b220f65 e78ce90
+Author: AliifRahman <59392823+AliifRahman@users.noreply.github.com>
+Date:   Wed Oct 2 15:21:06 2024 +0700
+
+    Merge branch 'main' into doktergigi
+
+[33mcommit e78ce909499f0d76602474f1a39b7923345cef21[m
+Author: Alif Rahman <aliifrahman30@@example.com>
+Date:   Wed Oct 2 15:12:49 2024 +0700
+
+    include 3 files and exclude all pictures
+
+[33mcommit 97b3c86a6bd36a3209135453f1cfb25701b711b2[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Thu Sep 26 15:17:21 2024 +0700
+
+    Refactor: Change route from '/patients/Patient' to '/Patient' (matching satu sehat)
+
+[33mcommit caf72cde1e88080a149f8952285229a545d619b6[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 25 22:51:06 2024 +0700
+
+    Feat: Add validation to check if The request include bearer token
+
+[33mcommit d337b41d6bba6f822d214518b3fa812c5093524a[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 25 22:39:24 2024 +0700
+
+    Major Refactoring & Feat: Add new Proxy for satu-sehat module Patient
+
+[33mcommit 092f730237ff26ed6944812dff08403cddd3697e[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 18 20:38:41 2024 +0700
+
+    Refactor: Add API satu sehat
+
+[33mcommit b9b90c9f3ccc806da11fd8c41fccf8df1d557079[m
+Author: ardian_hermawan <imanuddin.ardian@gmail.com>
+Date:   Wed Sep 18 20:37:50 2024 +0700
+
+    Refactor: Add proxy for bypassing Satu - sehat
+
+[33mcommit b220f65d368a8a8b1d6b000d000c9bed51e3c76c[m[33m ([m[1;31morigin/doktergigi[m[33m)[m
+Author: Tsania Ursila <73732412+Tsaniaa@users.noreply.github.com>
+Date:   Sun Sep 15 23:10:15 2024 +0700
+
+    iterasi 1 sprint 2
+
+[33mcommit 52cb223ecd248602573b6a225f63e3d3d9e1a2a9[m
+Author: Alif Rahman <aliifrahman30@@example.com>
+Date:   Tue Sep 10 15:52:31 2024 +0700
+
+    exclude 3 files inside src/api/uploads
+
+[33mcommit fb6aa1a41c17ea621ac77699769ba28093739d17[m
+Author: Alif Rahman <aliifrahman30@@example.com>
+Date:   Tue Sep 10 15:49:20 2024 +0700
+
+    first commit

@@ -165,18 +165,16 @@ class RadiographicsService {
       } else {
         queryText += " WHERE ";
       }
-      queryText += `EXTRACT(MONTH FROM date(h.upload_date)) = $${
-        queryParams.length + 1
-      }`;
+      queryText += `EXTRACT(MONTH FROM date(h.upload_date)) = $${queryParams.length + 1
+        }`;
       queryParams.push(month);
     }
 
     queryText += ` group by h.patient_id, h.id, p.medic_number, p.fullname, u2.fullname, u.fullname, u2.id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.system_check_date`;
     queryText += ` order by h.created_at desc`;
 
-    queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${
-      queryParams.length + 2
-    }`;
+    queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2
+      }`;
     queryParams.push(limit, offset);
 
     const query = {
@@ -227,9 +225,8 @@ class RadiographicsService {
     queryText += ` group by h.patient_id, h.id, p.medic_number, p.fullname, u2.fullname, u.fullname, u2.id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status`;
     queryText += ` order by h.created_at desc`;
 
-    queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${
-      queryParams.length + 2
-    }`;
+    queryText += ` LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2
+      }`;
     queryParams.push(limit, offset);
 
     const query = {
@@ -249,7 +246,7 @@ class RadiographicsService {
 
   async getRadiographicById(radiographicId) {
     const query = {
-      text: `SELECT h.id AS history_id, p.medic_number, p.fullname, u2.fullname AS doctor_name, u.fullname AS radiographer_name, json_agg(d.*) AS diagnoses, u2.id AS doctor_id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.system_check_date
+      text: `SELECT h.id AS history_id, p.medic_number, p.fullname, u2.fullname AS doctor_name, u.fullname AS radiographer_name, json_agg(d.*) AS diagnoses, u2.id AS doctor_id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.catatan_pasien, h.system_check_date
       FROM histories h
       LEFT JOIN patients p ON h.patient_id = p.id
       LEFT JOIN users u ON h.radiographer_id = u.id
@@ -307,6 +304,36 @@ class RadiographicsService {
 
     if (!result.rowCount) {
       throw new InvariantError("Radiografi gagal diperbarui");
+    }
+
+    return result.rows[0];
+  }
+
+  async editRadiographicStatus(radiographicId, status) {
+    const query = {
+      text: "UPDATE histories SET status = $1 WHERE id = $2 RETURNING id",
+      values: [status, radiographicId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError("Status gagal diperbarui");
+    }
+
+    return result.rows[0];
+  }
+
+  async editRadiographicCatatan(radiographicId, catatan) {
+    const query = {
+      text: "UPDATE histories SET catatan_pasien = $1 WHERE id = $2 RETURNING id",
+      values: [catatan, radiographicId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError("Catatan pasien gagal diperbarui");
     }
 
     return result.rows[0];
@@ -421,7 +448,7 @@ class RadiographicsService {
 
     const { role } = result.rows[0];
 
-    if (!(role === "radiographer" || role === "doctor" || role=== "patient")) {
+    if (!(role === "radiographer" || role === "doctor" || role === "patient")) {
       throw new AuthenticationError("Anda tidak memilki akeses");
     }
   }
