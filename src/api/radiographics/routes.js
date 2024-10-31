@@ -15,7 +15,7 @@ const routes = (handler) => [
   },
   {
     method: "GET",
-    path: "/radiographics/detail/Z{radiographicId}",
+    path: "/radiographics/detail/{radiographicId}",
     handler: handler.getRadiographicHandler,
     options: {
       auth: "radiodiagnostic_jwt",
@@ -93,8 +93,24 @@ const routes = (handler) => [
   },
   {
     method: "PUT",
+    path: "/radiographics/edit/{radiographicId}/status",
+    handler: handler.putRadiographicStatusHandler,
+    options: {
+      auth: "radiodiagnostic_jwt",
+    },
+  },
+  {
+    method: "PUT",
     path: "/radiographics/edit/{radiographicId}/interpretation",
     handler: handler.putRadiographicInterpretationHandler,
+    options: {
+      auth: "radiodiagnostic_jwt",
+    },
+  },
+  {
+    method: "PUT",
+    path: "/radiographics/edit/{radiographicId}/catatan",
+    handler: handler.putRadiographicCatatanHandler,
     options: {
       auth: "radiodiagnostic_jwt",
     },

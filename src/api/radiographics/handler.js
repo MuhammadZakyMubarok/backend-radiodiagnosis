@@ -24,8 +24,12 @@ class RadiographicsHandler {
       this.putRadiographicPictureHandler.bind(this);
     this.putRadiographicDoctorHandler =
       this.putRadiographicDoctorHandler.bind(this);
+    this.putRadiographicStatusHandler =
+      this.putRadiographicStatusHandler.bind(this);
     this.putRadiographicInterpretationHandler =
       this.putRadiographicInterpretationHandler.bind(this);
+    this.putRadiographicCatatanHandler =
+      this.putRadiographicCatatanHandler.bind(this);
     this.deleteRadiographicInterpretationHandler =
       this.deleteRadiographicInterpretationHandler.bind(this);
     this.deleteRadiographicByIdHandler =
@@ -342,6 +346,30 @@ class RadiographicsHandler {
     }
   }
 
+  async putRadiographicStatusHandler({ payload, auth, params }, h) {
+    try {
+      const { id: credentialId } = auth.credentials;
+      await this._service.verifyUserAccessDoctor(credentialId);
+
+      const { radiographicId } = params;
+
+      const radiographic = await this._service.editRadiographicStatus(
+        radiographicId,
+        payload
+      );
+
+      const response = h.response({
+        status: "success",
+        message: "Status radiografi berhasil diperbarui",
+        data: radiographic,
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
   async putRadiographicInterpretationHandler({ payload, auth, params }, h) {
     try {
       const { id: credentialId } = auth.credentials;
@@ -357,6 +385,30 @@ class RadiographicsHandler {
       const response = h.response({
         status: "success",
         message: "Interpretasi manual radiografi berhasil diperbarui",
+        data: radiographic,
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async putRadiographicCatatanHandler({ payload, auth, params }, h) {
+    try {
+      const { id: credentialId } = auth.credentials;
+      await this._service.verifyUserAccessDoctor(credentialId);
+
+      const { radiographicId } = params;
+
+      const radiographic = await this._service.editRadiographicCatatan(
+        radiographicId,
+        payload
+      );
+
+      const response = h.response({
+        status: "success",
+        message: "Catatan pasien radiografi berhasil diperbarui",
         data: radiographic,
       });
       response.code(201);
