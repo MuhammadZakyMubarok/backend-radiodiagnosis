@@ -280,6 +280,36 @@ class UsersService {
     return result.rows[0].role;
   }
 
+  async getUserRoleByEmail(userEmail) {
+    const query = {
+      text: "SELECT role FROM users WHERE email = $1",
+      values: [userEmail],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError("User tidak ditemukan");
+    }
+
+    return result.rows[0].role;
+  }
+
+  async getStatusUserRole(userEmail) {
+    const query = {
+      text: "SELECT status_user FROM users WHERE email = $1",
+      values: [userEmail],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError("User tidak ditemukan");
+    }
+
+    return result.rows[0].role;
+  }
+
   async verifyUserCredential(email, password) {
     const query = {
       text: "SELECT id, password FROM users WHERE email = $1",

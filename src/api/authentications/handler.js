@@ -17,6 +17,7 @@ class AuthenticationsHandler {
       const { email, password } = payload;
       const id = await this._usersService.verifyUserCredential(email, password);
       const role = await this._usersService.getUserRoleByEmail(email);
+      const statusUser = await this._usersService.getStatusUserRole(email);
       const accessToken = this._tokenManager.generateAccessToken({ id });
       const refreshToken = this._tokenManager.generateRefreshToken({ id });
 
@@ -29,6 +30,7 @@ class AuthenticationsHandler {
           accessToken,
           refreshToken,
           role,
+          statusUser
         },
       });
       response.code(201);

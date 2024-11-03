@@ -32,8 +32,8 @@ class PatientsService {
     const query = {
       text: `INSERT INTO patients (id, fullname, medic_number, id_number,
         gender, religion, address, born_location,
-        born_date, age, phone_number, referral_origin, radiographic_id)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, fullname, fullname, id_number`,
+        born_date, age, phone_number, referral_origin, radiographic_id, status_user)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING id, fullname, fullname, id_number, status_user`,
       values: [
         id,
         fullname,
@@ -48,6 +48,7 @@ class PatientsService {
         phone_number,
         referral_origin,
         radiographic_id,
+        0
       ],
     };
 
@@ -78,26 +79,24 @@ class PatientsService {
       text: `SELECT id FROM users WHERE email = $1`,
       values: [email],
     };
-
+  
     const emailCheckResult = await this._pool.query(emailCheckQuery);
-
+  
     if (emailCheckResult.rowCount > 0) {
-      throw new InvariantError(
-        "Email sudah digunakan. Silakan gunakan email lain."
-      );
+      throw new InvariantError("Email sudah digunakan. Silakan gunakan email lain.");
     }
-
+  
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10); // angka 10 adalah salt rounds
-
+  
     // Generate 5-digit random NIP
     const nip = Math.floor(10000 + Math.random() * 90000).toString();
     const id = `user-${nanoid(16)}`;
-
-    // Insert data into 'user' table
+  
+    // Insert data into 'users' table
     const userQuery = {
-      text: `INSERT INTO users (id, fullname, email, password, role, phone_number, gender, address, province, city, postal_code, nip)
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, fullname, email, nip`,
+      text: `INSERT INTO users (id, fullname, email, password, role, phone_number, gender, address, province, city, postal_code, nip, status_user)
+             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, fullname, email, nip, status_user`,
       values: [
         id,
         fullname,
@@ -111,40 +110,43 @@ class PatientsService {
         city,
         postal_code,
         nip,
+        0 // Set status_user to 0
       ],
     };
-
+  
     const userResult = await this._pool.query(userQuery);
-
+  
     if (!userResult.rowCount) {
       throw new InvariantError("User gagal ditambahkan");
     }
-
+  
     // Insert data into 'patients' table
     const patientQuery = {
-      text: `INSERT INTO patients (id, fullname, medic_number, gender, address, phone_number, born_location, born_date, religion, id_number, referral_origin)
-                VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, 'indonesia', NULL) RETURNING id, fullname, medic_number`,
+      text: `INSERT INTO patients (id, fullname, medic_number, id_number, gender, address, phone_number, born_location, born_date, religion, status_user)
+             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id, fullname, medic_number, status_user`,
       values: [
         id,
         fullname,
         nip,
+        '', // Default value for id_number if it's not provided
         gender,
         address,
         phone_number,
         born_location,
         born_date,
         religion,
+        0 // Set status_user to 0
       ],
     };
-
+  
     const patientResult = await this._pool.query(patientQuery);
-
+  
     if (!patientResult.rowCount) {
       throw new InvariantError("Pasien gagal register");
     }
-
+  
     return { user: userResult.rows[0], patient: patientResult.rows[0] };
-  }
+  }  
 
   async getPatientTotalRows() {
     const query = {
