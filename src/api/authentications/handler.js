@@ -20,9 +20,9 @@ class AuthenticationsHandler {
       const statusUser = await this._usersService.getStatusUserRole(email);
       const accessToken = this._tokenManager.generateAccessToken({ id });
       const refreshToken = this._tokenManager.generateRefreshToken({ id });
-
+      // console.log(role);
+      // console.log(statusUser);
       await this._authenticationsService.addRefreshToken(refreshToken);
-
       const response = h.response({
         status: 'success',
         message: 'Authentication berhasil ditambahkan',
@@ -30,7 +30,7 @@ class AuthenticationsHandler {
           accessToken,
           refreshToken,
           role,
-          statusUser
+          statusUser,
         },
       });
       response.code(201);

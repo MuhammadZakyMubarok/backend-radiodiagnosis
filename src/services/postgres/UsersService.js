@@ -270,22 +270,6 @@ class UsersService {
       text: "SELECT role FROM users WHERE email = $1",
       values: [userEmail],
     };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError("User tidak ditemukan");
-    }
-
-    return result.rows[0].role;
-  }
-
-  async getUserRoleByEmail(userEmail) {
-    const query = {
-      text: "SELECT role FROM users WHERE email = $1",
-      values: [userEmail],
-    };
-
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
@@ -302,12 +286,12 @@ class UsersService {
     };
 
     const result = await this._pool.query(query);
-
+    // console.log(result);
     if (!result.rowCount) {
       throw new NotFoundError("User tidak ditemukan");
     }
 
-    return result.rows[0].role;
+    return result.rows[0].status_user;
   }
 
   async verifyUserCredential(email, password) {
