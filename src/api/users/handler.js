@@ -79,6 +79,7 @@ class UsersHandler {
 
       let doctor = 0;
       let radiographer = 0;
+      let patient = 0;
       let total = 0;
 
       totalRows.forEach((row) => {
@@ -99,6 +100,7 @@ class UsersHandler {
           total,
           doctor,
           radiographer,
+          patient,
           totalPages: Math.ceil(total / limit),
           currentPage: page,
         },
