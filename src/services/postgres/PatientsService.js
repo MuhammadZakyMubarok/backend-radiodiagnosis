@@ -469,8 +469,8 @@ class PatientsService {
 
     const { role } = result.rows[0];
 
-    if (role !== "radiographer" || role !== "patient") {
-      throw new AuthenticationError("Anda tidak memilki akeses");
+    if (!(role === "radiographer" || role === "patient")) {
+      throw new AuthenticationError("Anda tidak memiliki akses");
     }
   }
 
