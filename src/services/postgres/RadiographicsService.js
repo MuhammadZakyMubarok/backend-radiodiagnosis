@@ -151,6 +151,8 @@ class RadiographicsService {
       }
 
       if (verified == "true") {
+        verified = 2;
+      } else if (verified == "ongoing") {
         verified = 1;
       } else if (verified == "false") {
         verified = 0;
