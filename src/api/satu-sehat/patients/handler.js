@@ -104,6 +104,7 @@ class SatuSehatAuthenticationHandler {
         patientId,
       }, authorization);
 
+
       const response = h.response({
         status: 'success',
         message: 'Pasien berhasil didapatkan dari satu sehat',
