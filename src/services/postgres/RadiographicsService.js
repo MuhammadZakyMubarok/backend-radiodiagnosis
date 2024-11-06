@@ -151,6 +151,8 @@ class RadiographicsService {
       }
 
       if (verified == "true") {
+        verified = 2;
+      } else if (verified == "ongoing") {
         verified = 1;
       } else if (verified == "false") {
         verified = 0;
@@ -199,7 +201,6 @@ class RadiographicsService {
     LEFT JOIN users u ON h.radiographer_id = u.id
     LEFT JOIN users u2 ON h.doctor_id = u2.id
     LEFT JOIN diagnoses d ON h.id = d.history_id
-    WHERE system_check_date IS NOT NULL
     `;
 
     const queryParams = [];
