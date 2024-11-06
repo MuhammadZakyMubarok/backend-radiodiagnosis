@@ -12,10 +12,10 @@ class SatuSehatAuthenticationHandler {
     this.getPatientByIdHandler = this.getPatientByIdHandler.bind(this);
   }
 
-  async getPatientByNIKHandler({ params, headers }, h) {
+  async getPatientByNIKHandler({ query, headers }, h) {
     try {
       const { authorization } = headers;
-      const { nik } = params;
+      const { nik } = query;
       const patient = await this._service.getPatientByNIK({
         nik,
       }, authorization);
@@ -32,10 +32,10 @@ class SatuSehatAuthenticationHandler {
     }
   }
 
-  async getPatientByNIKIbuHandler({ params, headers }, h) {
+  async getPatientByNIKIbuHandler({ query, headers }, h) {
     try {
       const { authorization } = headers;
-      const { nik } = params;
+      const { nik } = query;
       const patient = await this._service.getPatientByNIKIbu({
         nik,
       }, authorization);
@@ -52,10 +52,10 @@ class SatuSehatAuthenticationHandler {
     }
   }
 
-  async getPatientByNameBirthdateIdentifierHandler({ params, headers }, h) {
+  async getPatientByNameBirthdateIdentifierHandler({ query, headers }, h) {
     try {
       const { authorization } = headers;
-      const { name, birthday, identifier } = params;
+      const { name, birthday, identifier } = query;
       const patient = await this._service.getPatientByNameBirthdateIdentifier({
         name,
         birthday,
@@ -74,10 +74,10 @@ class SatuSehatAuthenticationHandler {
     }
   }
 
-  async getPatientByNameBirthdateGenderHandler({ params, headers }, h) {
+  async getPatientByNameBirthdateGenderHandler({ query, headers }, h) {
     try {
       const { authorization } = headers;
-      const { name, birthday, gender } = params;
+      const { name, birthday, gender } = query;
       const patient = await this._service.getPatientByNameBirthdateGender({
         name,
         birthday,
@@ -132,7 +132,7 @@ class SatuSehatAuthenticationHandler {
     this._patients.push(newPatient);
     return newPatient;
   }
-  
+
 }
 
 module.exports = SatuSehatAuthenticationHandler;
