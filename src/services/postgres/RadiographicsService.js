@@ -197,6 +197,11 @@ class RadiographicsService {
   async getAllHistories(month, limit, offset, search) {
     let queryText = `SELECT h.id AS history_id, p.medic_number as medic_number, p.fullname, u2.fullname AS doctor_name, u.fullname AS radiographer_name, json_agg(d.*) AS diagnoses, u2.id AS doctor_id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.system_check_date
     FROM histories h
+    INNER JOIN (
+      SELECT patient_id, MAX(created_at) AS created_at
+      FROM histories
+      GROUP BY patient_id
+    )latest ON h.patient_id = latest.patient_id AND h.created_at = latest.created_at
     LEFT JOIN patients p ON h.patient_id = p.id
     LEFT JOIN users u ON h.radiographer_id = u.id
     LEFT JOIN users u2 ON h.doctor_id = u2.id
@@ -254,7 +259,7 @@ class RadiographicsService {
       LEFT JOIN users u2 ON h.doctor_id = u2.id
       LEFT JOIN diagnoses d ON h.id = d.history_id
       WHERE h.id = $1
-      group by h.id, p.medic_number, p.fullname, u2.fullname, u.fullname, u2.id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.system_check_date
+      group by h.id, p.medic_number, p.fullname, u2.fullname, u.fullname, u2.id, h.panoramik_picture, h.upload_date, h.panoramik_check_date, h.status, h.catatan_pasien, h.system_check_date
       `,
       values: [radiographicId],
     };
@@ -311,9 +316,12 @@ class RadiographicsService {
   }
 
   async editRadiographicStatus(radiographicId, status) {
+    const now = new Date().toLocaleDateString("en-ZA", {
+      timeZone: "Asia/Jakarta",
+    });
     const query = {
-      text: "UPDATE histories SET status = $1 WHERE id = $2 RETURNING id",
-      values: [status, radiographicId],
+      text: "UPDATE histories SET status = $1, panoramik_check_date = $2 WHERE id = $3 RETURNING id",
+      values: [status, now, radiographicId],
     };
 
     const result = await this._pool.query(query);
