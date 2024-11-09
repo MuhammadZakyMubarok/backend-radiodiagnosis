@@ -307,7 +307,7 @@ class PatientsService {
 
   async updatePatientStatus(patientId, newStatus) {
     const query = {
-      text: 'UPDATE patients SET status_user = $1 WHERE id = $2 RETURNING id',
+      text: 'UPDATE users SET status_user = $1 WHERE id = $2 RETURNING id',
       values: [newStatus, patientId],
     };
 
@@ -321,9 +321,10 @@ class PatientsService {
   }
 
   async getAllPatients(limit, offset, search) {
-    let queryText = `SELECT patients.*, users.fullname as radiographer, latest.upload_date, latest.panoramik_check_date
+    let queryText = `SELECT patients.*, users_radiographic.fullname as radiographer, users_status.status_user as status_user, latest.upload_date, latest.panoramik_check_date
     FROM patients
-    LEFT JOIN users ON patients.radiographic_id = users.id
+    LEFT JOIN users AS users_radiographic ON patients.radiographic_id = users_radiographic.id
+    LEFT JOIN users AS users_status ON patients.id = users_status.id
     LEFT JOIN (
       SELECT patient_id, MAX(upload_date) AS upload_date, MAX(panoramik_check_date) AS panoramik_check_date, MAX(created_at) as created_at FROM histories group by patient_id
     ) latest ON patients.id = latest.patient_id

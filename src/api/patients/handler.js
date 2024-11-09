@@ -43,10 +43,11 @@ class PatientsHandler {
 
       // Ambil status_user saat ini dari database
       // eslint-disable-next-line max-len
-      const currentStatus = await this._service.getPatientById(patientId);
+      // const currentStatus = await this._service.getPatientById(patientId);
 
       // Tentukan status baru berdasarkan nilai status saat ini
-      const newStatus = currentStatus.status_user === 1 ? 0 : 1;
+      // const newStatus = currentStatus.status_user !== 1 ? 1 : 0;
+      const newStatus = 1;
 
       // Perbarui status_user di database
       await this._service.updatePatientStatus(patientId, newStatus);
