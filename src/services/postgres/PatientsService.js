@@ -65,6 +65,7 @@ class PatientsService {
     email,
     password,
     phone_number,
+    id_number,
     gender,
     address,
     province,
@@ -73,6 +74,9 @@ class PatientsService {
     religion,
     born_location,
     born_date,
+    referral_origin,
+    age,
+    status_user,
   }) {
     // Cek apakah email sudah ada di database
     const emailCheckQuery = {
@@ -81,7 +85,7 @@ class PatientsService {
     };
 
     const emailCheckResult = await this._pool.query(emailCheckQuery);
-
+    const valStatus = 0;
     if (emailCheckResult.rowCount > 0) {
       throw new InvariantError('Email sudah digunakan. Silakan gunakan email lain.');
     }
@@ -110,7 +114,7 @@ class PatientsService {
         city,
         postal_code,
         nip,
-        0, // Set status_user to 0
+        valStatus, // Set status_user to 0
       ],
     };
 
@@ -122,20 +126,22 @@ class PatientsService {
 
     // Insert data into 'patients' table
     const patientQuery = {
-      text: `INSERT INTO patients (id, fullname, medic_number, id_number, gender, address, phone_number, born_location, born_date, religion, status_user)
-             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id, fullname, medic_number, status_user`,
+      text: `INSERT INTO patients (id, fullname, medic_number, id_number, gender, address, phone_number, born_location, born_date, referral_origin, age, religion, status_user)
+             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id, fullname, medic_number, status_user`,
       values: [
         id,
         fullname,
         nip,
-        '', // Default value for id_number if it's not provided
+        id_number, // Default value for id_number if it's not provided
         gender,
         address,
         phone_number,
         born_location,
         born_date,
+        referral_origin,
+        age,
         religion,
-        0, // Set status_user to 0
+        valStatus, // Set status_user to 0
       ],
     };
 
