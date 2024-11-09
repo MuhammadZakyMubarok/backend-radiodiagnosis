@@ -313,7 +313,7 @@ class PatientsService {
 
   async updatePatientStatus(patientId, newStatus) {
     const query = {
-      text: 'UPDATE users SET status_user = $1 WHERE id = $2 RETURNING id',
+      text: 'UPDATE patients SET status_user = $1 WHERE id = $2 RETURNING id',
       values: [newStatus, patientId],
     };
 
@@ -327,13 +327,33 @@ class PatientsService {
   }
 
   async getAllPatients(limit, offset, search) {
-    let queryText = `SELECT patients.*, users_radiographic.fullname as radiographer, users_status.status_user as status_user, latest.upload_date, latest.panoramik_check_date
-    FROM patients
-    LEFT JOIN users AS users_radiographic ON patients.radiographic_id = users_radiographic.id
-    LEFT JOIN users AS users_status ON patients.id = users_status.id
-    LEFT JOIN (
-      SELECT patient_id, MAX(upload_date) AS upload_date, MAX(panoramik_check_date) AS panoramik_check_date, MAX(created_at) as created_at FROM histories group by patient_id
-    ) latest ON patients.id = latest.patient_id
+    let queryText = `
+      SELECT 
+        patients.*, 
+        users.fullname AS radiographer, 
+        latest.upload_date, 
+        latest.conditional_panoramik_check_date AS panoramik_check_date
+      FROM 
+        patients
+      LEFT JOIN 
+        users ON patients.radiographic_id = users.id
+      LEFT JOIN (
+        SELECT 
+          patient_id, 
+          MAX(upload_date) AS upload_date, 
+          MAX(panoramik_check_date) AS original_panoramik_check_date, 
+          MAX(created_at) AS created_at,
+          -- Konditional logic jika semisal patient memiliki lebih dari satu gambar
+          CASE 
+            WHEN COUNT(*) = COUNT(CASE WHEN status = 2 THEN 1 END) 
+            THEN CURRENT_DATE
+            ELSE NULL
+          END AS conditional_panoramik_check_date
+        FROM 
+          histories 
+        GROUP BY 
+          patient_id
+      ) latest ON patients.id = latest.patient_id
     `;
 
     const queryParams = [limit, offset];
