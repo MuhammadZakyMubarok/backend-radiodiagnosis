@@ -21,6 +21,7 @@ class StorageService {
       file.on('end', () => resolve(filename));
     });
   }
+
 }
 
 module.exports = StorageService;
