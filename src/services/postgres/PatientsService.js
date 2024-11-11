@@ -313,7 +313,7 @@ class PatientsService {
 
   async updatePatientStatus(patientId, newStatus) {
     const query = {
-      text: 'UPDATE patients SET status_user = $1 WHERE id = $2 RETURNING id',
+      text: 'UPDATE users SET status_user = $1 WHERE id = $2 RETURNING id',
       values: [newStatus, patientId],
     };
 
@@ -330,13 +330,16 @@ class PatientsService {
     let queryText = `
       SELECT 
         patients.*, 
-        users.fullname AS radiographer, 
+        users_radiographic.fullname AS radiographer, 
+        users_status.status_user as status_user,
         latest.upload_date, 
         latest.conditional_panoramik_check_date AS panoramik_check_date
       FROM 
         patients
       LEFT JOIN 
         users ON patients.radiographic_id = users.id
+      LEFT JOIN users AS users_radiographic ON patients.radiographic_id = users_radiographic.id
+      LEFT JOIN users AS users_status ON patients.id = users_status.id
       LEFT JOIN (
         SELECT 
           patient_id, 
