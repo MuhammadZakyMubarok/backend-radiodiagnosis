@@ -349,6 +349,21 @@ class PatientsService {
     return result.rows[0].id;
   }
 
+  async updatePatientRadiographerId(patientId, { radiographerId }) {
+    const query = {
+      text: 'UPDATE patients SET radiographic_id = $1 WHERE id = $2 RETURNING id',
+      values: [radiographerId, patientId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Pasien tidak ditemukan');
+    }
+
+    return result.rows[0].id;
+  }
+
   async getAllPatients(limit, offset, search) {
     let queryText = `
       SELECT 

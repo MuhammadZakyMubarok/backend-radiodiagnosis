@@ -33,7 +33,7 @@ class PatientsHandler {
     }
   }
 
-  async changeStatusPatientHandler({ params, auth }, h) {
+  async changeStatusPatientHandler({ payload, params, auth }, h) {
     try {
       const { id: credentialId } = auth.credentials;
       const { patientId } = params;
@@ -51,6 +51,7 @@ class PatientsHandler {
 
       // Perbarui status_user di database
       await this._service.updatePatientStatus(patientId, newStatus);
+      await this._service.updatePatientRadiographerId(patientId, payload);
 
       const response = h.response({
         status: 'success',
