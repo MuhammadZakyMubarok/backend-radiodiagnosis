@@ -124,6 +124,29 @@ class PatientsService {
       throw new InvariantError('User gagal ditambahkan');
     }
 
+        // Fungsi untuk mendapatkan nomor medis berikutnya
+        const getNextMedicNumber = async () => {
+          // Query untuk mendapatkan medic_number terakhir
+          const result = await this._pool.query('SELECT medic_number FROM patients ORDER BY medic_number DESC LIMIT 1');
+    
+          // Jika ada nomor medis yang ditemukan, tambahkan 1
+          let nextMedicNumber = 1; // Default untuk pertama kali
+          if (result.rows.length > 0) {
+            nextMedicNumber = parseInt(result.rows[0].medic_number, 10) + 1;
+          }
+    
+          // Pastikan tidak melebihi 5 digit
+          if (nextMedicNumber > 99999) {
+            throw new Error('Medic number telah mencapai angka maksimal (99999)');
+          }
+    
+          // Format untuk memastikan nomor medis memiliki 5 digit
+          return nextMedicNumber.toString().padStart(5, '0');
+        };
+    
+        // Dapatkan nomor medis berikutnya
+        const medic_number = await getNextMedicNumber();
+    
     // Insert data into 'patients' table
     const patientQuery = {
       text: `INSERT INTO patients (id, fullname, medic_number, id_number, gender, address, phone_number, born_location, born_date, referral_origin, age, religion, status_user)
@@ -131,7 +154,7 @@ class PatientsService {
       values: [
         id,
         fullname,
-        nip,
+        medic_number,
         id_number, // Default value for id_number if it's not provided
         gender,
         address,
