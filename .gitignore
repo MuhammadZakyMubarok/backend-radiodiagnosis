@@ -1,4 +1,5 @@
 node_modules
 .env
 .prod.env
-src/api/uploads/pictures
+src/api/uploads/file
+detection/backend/data.json
