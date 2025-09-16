@@ -2,13 +2,10 @@ class DiagnosesHandler {
   constructor(service, radiographicService) {
     this._service = service;
     this._radiographicService = radiographicService;
-    this.postSystemDiagonsesHandler =
-      this.postSystemDiagonsesHandler.bind(this);
-    this.postManualDiagonsesHandler =
-      this.postManualDiagonsesHandler.bind(this);
+    this.postSystemDiagonsesHandler = this.postSystemDiagonsesHandler.bind(this);
+    this.postManualDiagonsesHandler = this.postManualDiagonsesHandler.bind(this);
     this.getDummyDiagnosesHandler = this.getDummyDiagnosesHandler.bind(this);
-    this.updateVerificatorDiagnoseHandler =
-      this.updateVerificatorDiagnoseHandler.bind(this);
+    this.updateVerificatorDiagnoseHandler = this.updateVerificatorDiagnoseHandler.bind(this);
   }
 
   async postSystemDiagonsesHandler({ payload, auth, params }, h) {
@@ -26,8 +23,8 @@ class DiagnosesHandler {
       });
 
       const response = h.response({
-        status: "success",
-        message: "Diagnosa berhasil ditambahkan",
+        status: 'success',
+        message: 'Diagnosa berhasil ditambahkan',
         data: diagnoses,
       });
       response.code(201);
@@ -53,8 +50,8 @@ class DiagnosesHandler {
       });
 
       const response = h.response({
-        status: "success",
-        message: "Diagnosa berhasil ditambahkan",
+        status: 'success',
+        message: 'Diagnosa berhasil ditambahkan',
         data: diagnoses,
       });
       response.code(201);
@@ -79,8 +76,8 @@ class DiagnosesHandler {
       });
 
       const response = h.response({
-        status: "success",
-        message: "Diagnosa berhasil ditambahkan",
+        status: 'success',
+        message: 'Diagnosa berhasil ditambahkan',
         data: diagnoses,
       });
       response.code(201);
@@ -106,7 +103,7 @@ class DiagnosesHandler {
       });
 
       const response = h.response({
-        status: "success",
+        status: 'success',
         data: {
           diagnoses,
         },

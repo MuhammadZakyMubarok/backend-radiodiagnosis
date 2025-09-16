@@ -15,6 +15,10 @@ class AuthenticationsHandler {
       this._validator.validatePostAuthenticationPayload(payload);
 
       const { email, password } = payload;
+      console.log({
+        email,
+        password,
+      });
       const id = await this._usersService.verifyUserCredential(email, password);
       const role = await this._usersService.getUserRoleByEmail(email);
       const statusUser = await this._usersService.getStatusUserRole(email);

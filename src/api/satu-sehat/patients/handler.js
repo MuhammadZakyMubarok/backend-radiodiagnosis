@@ -104,7 +104,6 @@ class SatuSehatAuthenticationHandler {
         patientId,
       }, authorization);
 
-
       const response = h.response({
         status: 'success',
         message: 'Pasien berhasil didapatkan dari satu sehat',
@@ -132,7 +131,6 @@ class SatuSehatAuthenticationHandler {
     this._patients.push(newPatient);
     return newPatient;
   }
-
 }
 
 module.exports = SatuSehatAuthenticationHandler;
