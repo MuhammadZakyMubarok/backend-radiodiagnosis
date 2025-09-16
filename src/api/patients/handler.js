@@ -22,8 +22,8 @@ class PatientsHandler {
       const patientId = await this._service.addPatient(payload);
 
       const response = h.response({
-        status: "success",
-        message: "Pasien berhasil ditambahkan",
+        status: 'success',
+        message: 'Pasien berhasil ditambahkan',
         data: patientId,
       });
       response.code(201);
@@ -33,7 +33,7 @@ class PatientsHandler {
     }
   }
 
-  async changeStatusPatientHandler({ params, auth }, h) {
+  async changeStatusPatientHandler({ payload, params, auth }, h) {
     try {
       const { id: credentialId } = auth.credentials;
       const { patientId } = params;
@@ -42,17 +42,20 @@ class PatientsHandler {
       await this._service.verifyUserAccessRadiographer(credentialId);
 
       // Ambil status_user saat ini dari database
-      const currentStatus = await this._service.getPatientStatus(patientId);
+      // eslint-disable-next-line max-len
+      // const currentStatus = await this._service.getPatientById(patientId);
 
       // Tentukan status baru berdasarkan nilai status saat ini
-      const newStatus = currentStatus === 1 ? 0 : 1;
+      // const newStatus = currentStatus.status_user !== 1 ? 1 : 0;
+      const newStatus = 1;
 
       // Perbarui status_user di database
       await this._service.updatePatientStatus(patientId, newStatus);
+      await this._service.updatePatientRadiographerId(patientId, payload);
 
       const response = h.response({
-        status: "success",
-        message: "Status pasien berhasil diubah",
+        status: 'success',
+        message: 'Status pasien berhasil diubah',
         data: { patientId, newStatus },
       });
       response.code(200);
@@ -72,17 +75,17 @@ class PatientsHandler {
 
       return h
         .response({
-          status: "success",
-          message: "Anda berhasil register sebagai pasien",
+          status: 'success',
+          message: 'Anda berhasil register sebagai pasien',
           data: patientId,
         })
         .code(201);
     } catch (error) {
-      console.error("Registration Error:", error);
+      console.error('Registration Error:', error);
       return h
         .response({
-          status: "fail",
-          message: error.message || "Pendaftaran gagal, silakan coba lagi.",
+          status: 'fail',
+          message: error.message || 'Pendaftaran gagal, silakan coba lagi.',
         })
         .code(500);
     }
@@ -95,7 +98,7 @@ class PatientsHandler {
       const patients = await this._service.getAllPatient();
 
       return {
-        status: "success",
+        status: 'success',
         data: patients,
       };
     } catch (error) {
@@ -107,18 +110,19 @@ class PatientsHandler {
     try {
       // Periksa jika auth.credentials tidak null sebelum destructuring
       if (!auth.credentials) {
-        throw new Error("Authentication credentials are missing");
+        throw new Error('Authentication credentials are missing');
       }
 
       const { id: credentialId } = auth.credentials;
 
       // Validasi parameter query secara manual
-      const { userId, month, limit, offset, search, verified } = query;
+      const {
+        userId, month, limit, offset, search, verified,
+      } = query;
       const parsedLimit = parseInt(limit, 10) || 10;
       const parsedOffset = parseInt(offset, 10) || 0;
       const parsedMonth = parseInt(month, 10) || null;
-      const parsedVerified =
-        verified === "true" ? 1 : verified === "false" ? 0 : null;
+      const parsedVerified = verified === 'true' ? 1 : verified === 'false' ? 0 : null;
 
       // Verifikasi user access
       await this._service.verifyUserAccess(credentialId);
@@ -130,17 +134,17 @@ class PatientsHandler {
         parsedLimit,
         parsedOffset,
         search,
-        parsedVerified
+        parsedVerified,
       );
 
       return {
-        status: "success",
+        status: 'success',
         data: result,
       };
     } catch (error) {
       return {
-        status: "error",
-        message: error.message || "An error occurred",
+        status: 'error',
+        message: error.message || 'An error occurred',
       };
     }
   }
@@ -156,13 +160,14 @@ class PatientsHandler {
       const patients = await this._service.getAllPatients(
         limit,
         offset,
-        search
+        search,
       );
-      const { total, verified, unverified, thisDay, thisMonth } =
-        await this._service.getPatientTotalRows();
+      const {
+        total, verified, unverified, thisDay, thisMonth,
+      } = await this._service.getPatientTotalRows();
 
       return {
-        status: "success",
+        status: 'success',
         data: patients,
         meta: {
           total,
@@ -187,7 +192,7 @@ class PatientsHandler {
       const patient = await this._service.getPatientById(patientId);
 
       return {
-        status: "success",
+        status: 'success',
         data: patient,
       };
     } catch (error) {
@@ -204,8 +209,8 @@ class PatientsHandler {
       const patient = await this._service.editPatient(patientId, payload);
 
       const response = h.response({
-        status: "success",
-        message: "Pasien berhasil diperbarui",
+        status: 'success',
+        message: 'Pasien berhasil diperbarui',
         data: patient,
       });
       response.code(201);
@@ -224,8 +229,8 @@ class PatientsHandler {
       const patient = await this._service.deletePatientById(patientId);
 
       const response = h.response({
-        status: "success",
-        message: "Pasien berhasil dihapus",
+        status: 'success',
+        message: 'Pasien berhasil dihapus',
         data: patient,
       });
       response.code(201);

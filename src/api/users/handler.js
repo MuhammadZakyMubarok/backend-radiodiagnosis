@@ -1,4 +1,4 @@
-const { nanoid } = require("nanoid");
+const { nanoid } = require('nanoid');
 
 class UsersHandler {
   constructor(service, pictureService, validator, pictureValidator) {
@@ -54,8 +54,8 @@ class UsersHandler {
       });
 
       const response = h.response({
-        status: "success",
-        message: "User berhasil ditambahkan",
+        status: 'success',
+        message: 'User berhasil ditambahkan',
         data: userId,
         newPassword: password,
       });
@@ -79,22 +79,22 @@ class UsersHandler {
 
       let doctor = 0;
       let radiographer = 0;
-      let patient = 0;
+      const patient = 0;
       let total = 0;
 
       totalRows.forEach((row) => {
-        if (row.role === "doctor") {
+        if (row.role === 'doctor') {
           doctor = Number(row.total_rows);
-        } else if (row.role === "radiographer") {
+        } else if (row.role === 'radiographer') {
           radiographer = Number(row.total_rows);
-        }else if (row.role === "patient") {
+        } else if (row.role === 'patient') {
           radiographer = Number(row.total_rows);
         }
         total += Number(row.total_rows);
       });
 
       return {
-        status: "success",
+        status: 'success',
         data: users,
         meta: {
           total,
@@ -116,7 +116,7 @@ class UsersHandler {
       const user = await this._service.getUserById(credentialId);
 
       return {
-        status: "success",
+        status: 'success',
         data: user,
       };
     } catch (error) {
@@ -133,7 +133,7 @@ class UsersHandler {
       const user = await this._service.getUserById(userId);
 
       return {
-        status: "success",
+        status: 'success',
         data: user,
       };
     } catch (error) {
@@ -148,8 +148,8 @@ class UsersHandler {
       const user = await this._service.editUser(credentialId, payload);
 
       const response = h.response({
-        status: "success",
-        message: "User berhasil diperbarui",
+        status: 'success',
+        message: 'User berhasil diperbarui',
         data: user,
       });
       response.code(201);
@@ -168,8 +168,8 @@ class UsersHandler {
       const user = await this._service.editUserById(userId, payload);
 
       const response = h.response({
-        status: "success",
-        message: "User berhasil diperbarui",
+        status: 'success',
+        message: 'User berhasil diperbarui',
         data: user,
       });
       response.code(201);
@@ -185,23 +185,23 @@ class UsersHandler {
       const { id: credentialId } = auth.credentials;
 
       this._pictureValidator.validatePictureHeaders(
-        profilePicture.hapi.headers
+        profilePicture.hapi.headers,
       );
 
       const filename = await this._pictureService.writeFile(
         profilePicture,
-        profilePicture.hapi
+        profilePicture.hapi,
       );
       const pictureUrl = `/upload/pictures/${filename}`;
 
       const user = await this._service.editUserPicture(
         credentialId,
-        pictureUrl
+        pictureUrl,
       );
 
       const response = h.response({
-        status: "success",
-        message: "User picture berhasil diperbarui",
+        status: 'success',
+        message: 'User picture berhasil diperbarui',
         data: user,
       });
       response.code(201);
@@ -220,16 +220,16 @@ class UsersHandler {
         credentialId,
         password,
         newPassword,
-        newPasswordConfirmation
+        newPasswordConfirmation,
       );
       const user = await this._service.editUserPassword(
         credentialId,
-        newPassword
+        newPassword,
       );
 
       const response = h.response({
-        status: "success",
-        message: "User password berhasil diperbarui",
+        status: 'success',
+        message: 'User password berhasil diperbarui',
         data: user,
       });
       response.code(201);
@@ -248,8 +248,8 @@ class UsersHandler {
       const user = await this._service.deleteUserById(userId);
 
       const response = h.response({
-        status: "success",
-        message: "User berhasil dihapus",
+        status: 'success',
+        message: 'User berhasil dihapus',
         data: user,
       });
       response.code(201);

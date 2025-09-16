@@ -11,13 +11,12 @@ const routes = (handler) => [
   {
     method: 'POST',
     path: '/patients/status/{patientId}/{status_user}',
-    handler: handler.changeStatusPatientHandler,
+    handler: handler.changeStatusPatientHandler.bind(handler),
     options: {
       auth: 'radiodiagnostic_jwt',
     },
   },
 
-  
   {
     method: 'POST',
     path: '/patients/register',
