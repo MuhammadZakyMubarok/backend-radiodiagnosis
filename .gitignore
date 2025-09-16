@@ -3,4 +3,3 @@ node_modules
 .prod.env
 src/api/uploads/pictures
 detection/backend/data.json
-detection/*
