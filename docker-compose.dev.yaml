@@ -1,0 +1,15 @@
+name: 'backend-radiodiagnosis-v1'
+
+services:
+  backend:
+    container_name: backend-express
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    env_file:
+      - .env
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
