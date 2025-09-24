@@ -1,0 +1,41 @@
+pipeline {
+  agent any
+  environment {
+    REGISTRY = 'docker.io/ardianhermawan17'
+    IMAGE = "${env.REGISTRY}/backend-radiodiagnosis"
+    KUBECONFIG_CRED = 'kubeconfig-jenkins'
+    DOCKER_CRED = 'docker-ardian-read-write'
+    K8S_NAMESPACE = 'radiodiagnosis'
+  }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Install & build') {
+      steps {
+        sh 'npm ci'
+        sh 'npm run build || true'
+      }
+    }
+    stage('Build & push image to docker') {
+      steps {
+        script {
+          docker.withRegistry("https://${env.REGISTRY}", "${DOCKER_CRED}") {
+            def img = docker.build("${IMAGE}:${env.BUILD_NUMBER}")
+            img.push()
+            sh "docker tag ${IMAGE}:${env.BUILD_NUMBER} ${IMAGE}:latest || true"
+          }
+        }
+      }
+    }
+    stage('Deploy to kubernetes') {
+      steps {
+        withCredentials([file(credentialsId: "${KUBECONFIG_CRED}", variable: 'KUBECONFIG_FILE')]) {
+          sh '''
+            export KUBECONFIG=$KUBECONFIG_FILE
+            kubectl -n ${K8S_NAMESPACE} set image deployment/backend backend=${IMAGE}:${BUILD_NUMBER} --record
+            kubectl -n ${K8S_NAMESPACE} rollout status deployment/backend --timeout=120s
+          '''
+        }
+      }
+    }
+  }
+}
