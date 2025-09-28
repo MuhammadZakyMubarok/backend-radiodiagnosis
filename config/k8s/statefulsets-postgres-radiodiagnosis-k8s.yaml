@@ -1,0 +1,121 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: radiodiagnosis
+type: Opaque
+stringData:
+  username: postgres
+  password: AdminPass!2025
+  database: prod_radiodiagnosis_v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  namespace: radiodiagnosis
+  labels:
+    app: postgres
+spec:
+  clusterIP: None
+  selector:
+    app: postgres
+  ports:
+    - name: tcp
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: radiodiagnosis
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: postgres
+          image: postgres:18
+#          image: postgres:15
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: database
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 3
+            periodSeconds: 20
+            failureThreshold: 3
+#      volumes:
+#        - name: pgdata
+#          persistentVolumeClaim:
+#            claimName: postgres-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+        namespace: radiodiagnosis
+        labels:
+          app: postgres
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: local-path
+---
+# Menggunakan nodeport biar bisa akses database
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-nodeport
+  namespace: radiodiagnosis
+  labels:
+    app: postgres
+spec:
+  type: NodePort
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      nodePort: 30432

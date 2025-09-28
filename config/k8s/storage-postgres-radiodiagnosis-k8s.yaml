@@ -1,0 +1,28 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: postgres-pv
+  labels:
+    app: postgres
+provisioner: rancher.io/local-path
+parameters:
+#  path: /opt/local-path-provisioner
+  path: /var/lib/rancher/k3s/storage
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: radiodiagnosis
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: postgres-pv
