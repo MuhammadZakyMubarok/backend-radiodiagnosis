@@ -57,9 +57,11 @@ const init = async () => {
   const satuSehatAuthenticationService = new SatuSehatAuthenticationService();
   const satuSehatPatientService = new SatuSehatPatientsService();
 
+  const isProd = process.env.NODE_ENV === 'production';
+
   const server = Hapi.server({
-    port: process.env.PORT,
-    host: process.env.HOST,
+    port: process.env.PORT || 5001,
+    host: isProd ? (process.env.PROD_HOST || '0.0.0.0') : (process.env.HOST || 'localhost'),
     routes: {
       cors: {
         origin: ['*'],
