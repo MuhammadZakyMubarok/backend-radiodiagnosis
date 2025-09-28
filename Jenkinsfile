@@ -66,7 +66,7 @@ pipeline {
                  : > "$OUT"
 
                  # list of keys we might want to extract; add/remove as needed
-                 keys="PGUSER PGPASSWORD PGHOST PGPORT PGDATABASE ACCESS_TOKEN_KEY REFRESH_TOKEN_KEY SATU_SEHAT_BASE_URL SATU_SEHAT_AUTH_BASE_URL HOST PROD_HOST PORT"
+                 keys="PGUSER PGPASSWORD PGHOST PGPORT PGDATABASE ACCESS_TOKEN_KEY REFRESH_TOKEN_KEY SATU_SEHAT_BASE_URL SATU_SEHAT_AUTH_BASE_URL HOST PROD_HOST PORT NODE_ENV"
 
                  for k in $keys; do
                    val=$(kubectl -n ${K8S_NAMESPACE} get secret "$SECRET_NAME" -o "jsonpath={.data.${k}}" 2>/dev/null || true)
