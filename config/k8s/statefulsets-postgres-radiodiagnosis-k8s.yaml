@@ -72,15 +72,17 @@ spec:
             - name: pgdata
               mountPath: /var/lib/postgresql
           readinessProbe:
-            tcpSocket:
-              port: 5432
+            httpGet:
+              path: /healthz
+              port: 5001
             initialDelaySeconds: 10
             timeoutSeconds: 3
             periodSeconds: 10
             failureThreshold: 6
           livenessProbe:
-            tcpSocket:
-              port: 5432
+            httpGet:
+              path: /healthz
+              port: 5001
             initialDelaySeconds: 30
             timeoutSeconds: 3
             periodSeconds: 20

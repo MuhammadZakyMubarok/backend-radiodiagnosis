@@ -69,6 +69,13 @@ const init = async () => {
     },
   });
 
+  // Health check untuk kubernetes
+  server.route({
+    method: 'GET',
+    path: '/healthz',
+    handler: () => ({ status: 'ok' }),
+  });
+
   await server.register([
     {
       plugin: Jwt,
