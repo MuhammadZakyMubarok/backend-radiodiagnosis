@@ -27,7 +27,7 @@ COPY .env.example .env
 ENV NODE_ENV=development
 EXPOSE ${PORT:-5001}
 
-CMD ["nodemon", "app/src/server.js"]
+CMD ["npm", "run", "start-dev"]
 
 # Production
 FROM node:24-alpine AS production
@@ -41,4 +41,4 @@ COPY .env.example .env
 ENV NODE_ENV=production
 EXPOSE ${PORT:-5001}
 
-CMD ["node", "app/src/server.js"]
+CMD ["npm", "run", "start-prod"]
