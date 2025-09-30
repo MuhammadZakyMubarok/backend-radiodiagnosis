@@ -16,7 +16,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: backend
+                name: backend-headless
                 port:
                   number: 5001
   tls:
