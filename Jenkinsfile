@@ -185,12 +185,24 @@ pipeline {
 
                 # Wait for the statefulset rollout to finish (300s) and condition available. If it fails/times-out, dump some helpful info.
                 echo "Waiting for statefulset/${DEPLOYMENT_NAME} rollout status..."
-                if ! kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${DEPLOYMENT_NAME} --for=condition=available --timeout=600s; then
+                if ! kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${DEPLOYMENT_NAME} --timeout=600s; then
                   echo "Rollout status timed out or failed. Dumping statefulset and pod info for debugging:"
                   kubectl -n ${K8S_NAMESPACE} describe statefulset ${DEPLOYMENT_NAME} || true
                   kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide || true
                   kubectl -n ${K8S_NAMESPACE} logs -l app=${LABEL_APP} --tail=100 || true
                   # Fail the step so pipeline goes to post/failure
+                  exit 1
+                fi
+
+                # Wait for pod readiness (ensure pods are healthy)
+                if ! kubectl -n ${K8S_NAMESPACE} wait --for=condition=Ready pod -l app=${LABEL_APP} --timeout=300s; then
+                  echo "Pods did not become Ready within timeout. Dumping pod status and logs:"
+                  kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide || true
+                  kubectl -n ${K8S_NAMESPACE} describe pod -l app=${LABEL_APP} || true
+                  for p in $(kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o name || true); do
+                    echo "=== logs for $p ==="
+                    kubectl -n ${K8S_NAMESPACE} logs $p --all-containers --tail=200 || true
+                  done
                   exit 1
                 fi
 
