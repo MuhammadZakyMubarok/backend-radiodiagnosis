@@ -8,3 +8,4 @@
 - create database in postgresql on pgadmin
 - migrate all column to database # npm run migrate up
 - run application # npm run start-dev
+- radiodiagnosis.id
