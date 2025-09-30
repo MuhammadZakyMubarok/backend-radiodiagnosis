@@ -7,6 +7,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
+      args:
+        - NODE_ENV=production
     env_file:
       - .env
     ports:

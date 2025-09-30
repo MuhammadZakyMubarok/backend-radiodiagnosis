@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-headless
+  namespace: radiodiagnosis
+  labels:
+    app: backend
+spec:
+  clusterIP: None
+  selector:
+    app: backend
+  ports:
+    - port: 5001
+      name: http
+      targetPort: 5001
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: backend
+  namespace: radiodiagnosis
+  labels:
+    app: backend
+spec:
+  serviceName: backend-headless
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: backend
+          image: docker.io/ardianhermawan17/backend-radiodiagnosis:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - secretRef:
+                name: backend-radiodiagnosis-env
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/src/api/uploads/pictures
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5001
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 6
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5001
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: uploads
+        annotations:
+          volume.beta.kubernetes.io/storage-class: local-path
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 3Gi
+        storageClassName: local-path
+---

@@ -65,7 +65,7 @@ pipeline {
                  OUT=/tmp/backend.env
                  : > "$OUT"
 
-                 # list of keys we might want to extract; add/remove as needed
+                 # list ENV
                  keys="PGUSER PGPASSWORD PGHOST PGPORT PGDATABASE ACCESS_TOKEN_KEY REFRESH_TOKEN_KEY SATU_SEHAT_BASE_URL SATU_SEHAT_AUTH_BASE_URL HOST PROD_HOST PORT NODE_ENV"
 
                  for k in $keys; do
@@ -136,7 +136,7 @@ pipeline {
     stage('Update Kubernetes Manifests') {
       steps {
         sh '''
-          sed -i "s|docker.io/ardianhermawan17/backend-radiodiagnosis:latest|${IMAGE}:${BUILD_ID}|g" config/k8s/deploy-backend-radiodiagnosis-k8s.yaml
+          sed -i "s|docker.io/ardianhermawan17/backend-radiodiagnosis:latest|${IMAGE}:${BUILD_ID}|g" config/k8s/statefulset-backend-radiodiagnosis-k8s.yaml
         '''
       }
     }
@@ -148,13 +148,13 @@ pipeline {
             sh '''
                    set -eu
                    # Replace BUILD_ID_PLACEHOLDER with build id in template labels (unquoted numeric is fine)
-                   sed -i "s|BUILD_ID_PLACEHOLDER|${BUILD_ID}|g" config/k8s/deploy-backend-radiodiagnosis-k8s.yaml || true
+                   sed -i "s|BUILD_ID_PLACEHOLDER|${BUILD_ID}|g" config/k8s/statefulset-backend-radiodiagnosis-k8s.yaml || true
 
                    # Make sure image is replaced in manifest (defensive)
-                   sed -i "s|docker.io/ardianhermawan17/backend-radiodiagnosis:latest|${IMAGE}:${BUILD_ID}|g" config/k8s/deploy-backend-radiodiagnosis-k8s.yaml || true
+                   sed -i "s|docker.io/ardianhermawan17/backend-radiodiagnosis:latest|${IMAGE}:${BUILD_ID}|g" config/k8s/statefulset-backend-radiodiagnosis-k8s.yaml || true
 
                    # Apply and capture applied names (safe deletion later)
-                   kubectl apply -n ${K8S_NAMESPACE} -f config/k8s/deploy-backend-radiodiagnosis-k8s.yaml -o name > ${WORKSPACE}/applied.txt
+                   kubectl apply -n ${K8S_NAMESPACE} -f config/k8s/statefulset-backend-radiodiagnosis-k8s.yaml -o name > ${WORKSPACE}/applied.txt
                    echo "Applied:"
                    cat ${WORKSPACE}/applied.txt || true
                 '''

@@ -36,7 +36,7 @@ WORKDIR /app
 # Copy node_modules
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY . .
-COPY .env.example .env
+COPY .env.production .env
 
 ENV NODE_ENV=production
 EXPOSE ${PORT:-5001}
