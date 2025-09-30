@@ -185,7 +185,7 @@ pipeline {
 
                 # Wait for the statefulset rollout to finish (300s) and condition available. If it fails/times-out, dump some helpful info.
                 echo "Waiting for statefulset/${DEPLOYMENT_NAME} rollout status..."
-                if ! kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${DEPLOYMENT_NAME} --for=condition=available --timeout=300s; then
+                if ! kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${DEPLOYMENT_NAME} --for=condition=available --timeout=600s; then
                   echo "Rollout status timed out or failed. Dumping statefulset and pod info for debugging:"
                   kubectl -n ${K8S_NAMESPACE} describe statefulset ${DEPLOYMENT_NAME} || true
                   kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide || true
