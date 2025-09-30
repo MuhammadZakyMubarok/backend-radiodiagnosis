@@ -181,11 +181,21 @@ pipeline {
         container('kubectl') {
           withKubeConfig([credentialsId: env.KUBECONFIG_CRED]) {
             sh '''
-                  set -eu
-                  kubectl -n ${K8S_NAMESPACE} wait deployment/${DEPLOYMENT_NAME} --for=condition=available --timeout=300s
-                  kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide
-                  # Check apakah benar berhasil kalo enda di rollout
-                  kubectl -n ${K8S_NAMESPACE} rollout status deployment/${DEPLOYMENT_NAME} --timeout=300s || echo "Rollout status check timed out, but deployment may already be available"
+                 set -eu
+
+                # Wait for the statefulset rollout to finish (300s) and condition available. If it fails/times-out, dump some helpful info.
+                echo "Waiting for statefulset/${DEPLOYMENT_NAME} rollout status..."
+                if ! kubectl -n ${K8S_NAMESPACE} rollout status statefulset/${DEPLOYMENT_NAME} --for=condition=available --timeout=300s; then
+                  echo "Rollout status timed out or failed. Dumping statefulset and pod info for debugging:"
+                  kubectl -n ${K8S_NAMESPACE} describe statefulset ${DEPLOYMENT_NAME} || true
+                  kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide || true
+                  kubectl -n ${K8S_NAMESPACE} logs -l app=${LABEL_APP} --tail=100 || true
+                  # Fail the step so pipeline goes to post/failure
+                  exit 1
+                fi
+
+                # If rollout succeeded, show pods
+                kubectl -n ${K8S_NAMESPACE} get pods -l app=${LABEL_APP} -o wide
                 '''
           }
         }
@@ -198,40 +208,40 @@ pipeline {
       echo 'Pipeline succeeded! Deployment completed.'
     }
     failure {
-        echo 'Pipeline failed! Attempting safe rollback/cleanup...'
-        container('kubectl') {
-          withKubeConfig([credentialsId: env.KUBECONFIG_CRED]) {
-            sh '''
-              set -eu
-              APPLIED_FILE=${WORKSPACE}/applied.txt
+            echo 'Pipeline failed! Attempting safe rollback/cleanup...'
+            container('kubectl') {
+              withKubeConfig([credentialsId: env.KUBECONFIG_CRED]) {
+                sh '''
+                  set -eu
+                  APPLIED_FILE=${WORKSPACE}/applied.txt
 
-              echo "Checking for existing deployment ${DEPLOYMENT_NAME}..."
-              if kubectl -n ${K8S_NAMESPACE} get deployment ${DEPLOYMENT_NAME} >/dev/null 2>&1; then
-                echo "Rolling back deployment ${DEPLOYMENT_NAME} (if previous revision exists)..."
-                kubectl -n ${K8S_NAMESPACE} rollout undo deployment/${DEPLOYMENT_NAME} || echo "rollout undo ok/ignored"
-              else
-                echo "Deployment ${DEPLOYMENT_NAME} does not exist (nothing to rollback)"
-              fi
+                  echo "Checking for existing statefulset ${DEPLOYMENT_NAME}..."
+                  if kubectl -n ${K8S_NAMESPACE} get statefulset ${DEPLOYMENT_NAME} >/dev/null 2>&1; then
+                    echo "Attempting rollout undo for statefulset ${DEPLOYMENT_NAME} (if supported)..."
+                    # rollback for statefulset may be not supported in older k8s versions; ignore if it fails
+                    kubectl -n ${K8S_NAMESPACE} rollout undo statefulset/${DEPLOYMENT_NAME} || echo "rollout undo ok/ignored"
+                  else
+                    echo "StatefulSet ${DEPLOYMENT_NAME} does not exist (nothing to rollback)"
+                  fi
 
-              # If we have applied.txt, delete only those exact resource names (safe)
-              if [ -f "$APPLIED_FILE" ]; then
-                echo "Deleting applied resources listed in $APPLIED_FILE"
-                while IFS= read -r r || [ -n "$r" ]; do
-                  [ -z "$r" ] && continue
-                  echo "Deleting resource: $r"
-                  # Delete the exact resource name (e.g. deployment.apps/backend)
-                  kubectl -n ${K8S_NAMESPACE} delete "$r" --ignore-not-found || echo "delete $r failed (ignored)"
-                done < "$APPLIED_FILE"
-              else
-                echo "No applied.txt found; skipping exact-delete step."
-              fi
+                  # If we have applied.txt, delete only those exact resource names (safe)
+                  if [ -f "$APPLIED_FILE" ]; then
+                    echo "Deleting applied resources listed in $APPLIED_FILE"
+                    while IFS= read -r r || [ -n "$r" ]; do
+                      [ -z "$r" ] && continue
+                      echo "Deleting resource: $r"
+                      kubectl -n ${K8S_NAMESPACE} delete "$r" --ignore-not-found || echo "delete $r failed (ignored)"
+                    done < "$APPLIED_FILE"
+                  else
+                    echo "No applied.txt found; skipping exact-delete step."
+                  fi
 
-              echo "Final check: deployments in namespace:"
-              kubectl -n ${K8S_NAMESPACE} get deployments -o wide || true
-            '''
-          }
+                  echo "Final check: statefulsets in namespace:"
+                  kubectl -n ${K8S_NAMESPACE} get statefulsets -o wide || true
+                '''
+              }
+            }
         }
-    }
     always {
       echo 'Pipeline execution completed.'
       cleanWs()
