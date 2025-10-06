@@ -124,6 +124,24 @@ class DiagnosesService {
     return diagnoseResult.rows[0];
   }
 
+  async deleteManualDiagnoses({
+    toothNumber,
+    historyId,
+  }) {
+    const query = {
+      text: 'DELETE FROM diagnoses WHERE tooth_number = $1 AND history_id = $2',
+      values: [toothNumber, historyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('Diagnosa gagal dihapus');
+    }
+
+    return result.rowCount;
+  }
+
   async getDummySystemDiagnoses({ historyId, patientId, radiographerId }) {
     const query = {
       text: 'UPDATE histories SET system_check_date = $1 WHERE id = $2 RETURNING id, patient_id, radiographer_id, panoramik_picture, upload_date, system_check_date, created_at, updated_at',

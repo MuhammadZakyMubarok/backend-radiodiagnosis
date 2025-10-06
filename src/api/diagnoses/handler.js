@@ -4,6 +4,7 @@ class DiagnosesHandler {
     this._radiographicService = radiographicService;
     this.postSystemDiagonsesHandler = this.postSystemDiagonsesHandler.bind(this);
     this.postManualDiagonsesHandler = this.postManualDiagonsesHandler.bind(this);
+    this.deleteManualDiagonsesHandler = this.deleteManualDiagonsesHandler.bind(this);
     this.getDummyDiagnosesHandler = this.getDummyDiagnosesHandler.bind(this);
     this.updateVerificatorDiagnoseHandler = this.updateVerificatorDiagnoseHandler.bind(this);
   }
@@ -78,6 +79,31 @@ class DiagnosesHandler {
       const response = h.response({
         status: 'success',
         message: 'Diagnosa berhasil ditambahkan',
+        data: diagnoses,
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async deleteManualDiagonsesHandler({ payload, auth, params }, h) {
+    try {
+      const { id: credentialId } = auth.credentials;
+      await this._service.verifyAccessDoctor(credentialId);
+
+      const { radiographicId } = params;
+      const { toothNumber } = payload;
+
+      const diagnoses = await this._service.deleteManualDiagnoses({
+        toothNumber,
+        historyId: radiographicId,
+      });
+
+      const response = h.response({
+        status: 'success',
+        message: 'Diagnosa berhasil didelete',
         data: diagnoses,
       });
       response.code(201);

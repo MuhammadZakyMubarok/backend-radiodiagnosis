@@ -31,6 +31,15 @@ const routes = (handler) => [
       auth: 'radiodiagnostic_jwt',
     },
   },
+  // New ardian
+  {
+    method: 'DELETE',
+    path: '/diagnoses/{radiographicId}/delete',
+    handler: handler.deleteManualDiagonsesHandler,
+    options: {
+      auth: 'radiodiagnostic_jwt',
+    },
+  },
 ];
 
 module.exports = routes;
