@@ -33,7 +33,7 @@ const routes = (handler) => [
   },
   // New ardian
   {
-    method: 'DELETE',
+    method: 'POST',
     path: '/diagnoses/{radiographicId}/delete',
     handler: handler.deleteManualDiagonsesHandler,
     options: {

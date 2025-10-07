@@ -453,6 +453,7 @@ class RadiographicsHandler {
       });
 
       response.code(201);
+      return response;
     } catch (error) {
       return error;
     }
