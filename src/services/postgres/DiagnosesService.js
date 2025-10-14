@@ -124,7 +124,7 @@ class DiagnosesService {
     return diagnoseResult.rows[0];
   }
 
-  async bulkCreateDiagnoses({ payload, radiographicId }) {
+  async bulkCreateDiagnoses({ payload, radiographicId, dokterId }) {
     if (!Array.isArray(payload) || payload.length === 0) {
       throw new InvariantError('Payload must be a non-empty array');
     }
@@ -152,7 +152,7 @@ class DiagnosesService {
         row.tooth_number ?? null,
         row.system_diagnosis ?? null,
         row.is_corerct ?? null,
-        row.verificator_diagnosis ?? null,
+        dokterId, // verificator_diagnosis
         row.verificator_note ?? null,
         row.manual_diagnosis ?? null,
         row.history_id ?? null,

@@ -99,6 +99,7 @@ class DiagnosesHandler {
       const diagnoses = await this._service.bulkCreateDiagnoses({
         payload,
         radiographicId,
+        dokterId: credentialId,
       });
 
       const response = h.response({
