@@ -138,7 +138,6 @@ class DiagnosesService {
       'verificator_note',
       'manual_diagnosis',
       'history_id',
-      'radiographic_id',
       'verification_date',
     ];
 
@@ -155,8 +154,7 @@ class DiagnosesService {
         dokterId, // verificator_diagnosis
         row.verificator_note ?? null,
         row.manual_diagnosis ?? null,
-        row.history_id ?? null,
-        radiographicId,
+        radiographicId, // history_id
         new Date(),
       );
 
@@ -167,7 +165,7 @@ class DiagnosesService {
     const text = `
             INSERT INTO diagnoses (${columns.join(', ')})
             VALUES ${valuePlaceholders.join(', ')}
-                RETURNING id, tooth_number, system_diagnosis, is_corerct, verificator_diagnosis, verificator_note, manual_diagnosis, history_id, radiographic_id, verification_date
+                RETURNING id, tooth_number, system_diagnosis, is_corerct, verificator_diagnosis, verificator_note, manual_diagnosis, history_id, verification_date
         `;
 
     const client = await this._pool.connect();
