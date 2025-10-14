@@ -16,6 +16,7 @@ const routes = (handler) => [
       auth: 'radiodiagnostic_jwt',
     },
   },
+  // Old
   {
     method: 'POST',
     path: '/diagnoses/{radiographicId}/system',

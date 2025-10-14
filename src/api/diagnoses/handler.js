@@ -7,7 +7,7 @@ class DiagnosesHandler {
     this.deleteManualDiagonsesHandler = this.deleteManualDiagonsesHandler.bind(this);
     this.getDummyDiagnosesHandler = this.getDummyDiagnosesHandler.bind(this);
     this.updateVerificatorDiagnoseHandler = this.updateVerificatorDiagnoseHandler.bind(this);
-    this.postManyDiagnoseHandler = this.postManyDiagnoseHandler(this);
+    this.postManyDiagnoseHandler = this.postManyDiagnoseHandler.bind(this);
   }
 
   async postSystemDiagonsesHandler({ payload, auth, params }, h) {
