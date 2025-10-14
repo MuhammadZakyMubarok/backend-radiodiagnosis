@@ -124,6 +124,71 @@ class DiagnosesService {
     return diagnoseResult.rows[0];
   }
 
+  async bulkCreateDiagnoses({ payload, radiographicId }) {
+    if (!Array.isArray(payload) || payload.length === 0) {
+      throw new InvariantError('Payload must be a non-empty array');
+    }
+
+    const columns = [
+      'id',
+      'tooth_number',
+      'system_diagnosis',
+      'is_corerct',
+      'verificator_diagnosis',
+      'verificator_note',
+      'manual_diagnosis',
+      'history_id',
+      'radiographic_id',
+      'verification_date',
+    ];
+
+    const values = [];
+    const valuePlaceholders = payload.map((row, idx) => {
+      const baseIndex = idx * 10; // now 10 params per row
+      const id = `diagnose-${nanoid(16)}`;
+
+      values.push(
+        id,
+        row.tooth_number ?? null,
+        row.system_diagnosis ?? null,
+        row.is_corerct ?? null,
+        row.verificator_diagnosis ?? null,
+        row.verificator_note ?? null,
+        row.manual_diagnosis ?? null,
+        row.history_id ?? null,
+        radiographicId,
+        new Date(),
+      );
+
+      const placeholders = Array.from({ length: 10 }, (_, i) => `$${baseIndex + i + 1}`);
+      return `(${placeholders.join(', ')})`;
+    });
+
+    const text = `
+            INSERT INTO diagnoses (${columns.join(', ')})
+            VALUES ${valuePlaceholders.join(', ')}
+                RETURNING id, tooth_number, system_diagnosis, is_corerct, verificator_diagnosis, verificator_note, manual_diagnosis, history_id, radiographic_id, verification_date
+        `;
+
+    const client = await this._pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await client.query({ text, values });
+      await client.query('COMMIT');
+
+      if (!result.rowCount) {
+        throw new InvariantError('No diagnoses were inserted');
+      }
+
+      return result.rows;
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
+
   async deleteManualDiagnoses({
     toothNumber,
     historyId,

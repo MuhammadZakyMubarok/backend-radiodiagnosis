@@ -7,6 +7,7 @@ class DiagnosesHandler {
     this.deleteManualDiagonsesHandler = this.deleteManualDiagonsesHandler.bind(this);
     this.getDummyDiagnosesHandler = this.getDummyDiagnosesHandler.bind(this);
     this.updateVerificatorDiagnoseHandler = this.updateVerificatorDiagnoseHandler.bind(this);
+    this.postManyDiagnoseHandler = this.postManyDiagnoseHandler(this);
   }
 
   async postSystemDiagonsesHandler({ payload, auth, params }, h) {
@@ -79,6 +80,30 @@ class DiagnosesHandler {
       const response = h.response({
         status: 'success',
         message: 'Diagnosa berhasil ditambahkan',
+        data: diagnoses,
+      });
+      response.code(201);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async postManyDiagnoseHandler({ payload, auth, params }, h) {
+    try {
+      const { id: credentialId } = auth.credentials;
+      await this._service.verifyAccessDoctor(credentialId);
+
+      const { radiographicId } = params;
+
+      const diagnoses = await this._service.bulkCreateDiagnoses({
+        payload,
+        radiographicId,
+      });
+
+      const response = h.response({
+        status: 'success',
+        message: 'Diagnosa Detection AI berhasil ditambahkan',
         data: diagnoses,
       });
       response.code(201);

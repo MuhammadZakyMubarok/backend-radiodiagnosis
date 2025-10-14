@@ -34,6 +34,14 @@ const routes = (handler) => [
   // New ardian
   {
     method: 'POST',
+    path: '/diagnoses/{diagnosaId}/bulks',
+    handler: handler.postManyDiagnoseHandler,
+    options: {
+      auth: 'radiodiagnostic_jwt',
+    },
+  },
+  {
+    method: 'POST',
     path: '/diagnoses/{radiographicId}/delete',
     handler: handler.deleteManualDiagonsesHandler,
     options: {
