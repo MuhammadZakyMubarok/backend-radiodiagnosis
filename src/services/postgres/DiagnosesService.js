@@ -143,7 +143,7 @@ class DiagnosesService {
 
     const values = [];
     const valuePlaceholders = payload.map((row, idx) => {
-      const baseIndex = idx * 10; // now 10 params per row
+      const baseIndex = idx * 9; // now 9 params per row
       const id = `diagnose-${nanoid(16)}`;
 
       values.push(
