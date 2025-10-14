@@ -1,4 +1,21 @@
 const routes = (handler) => [
+  // New ardian
+  {
+    method: 'POST',
+    path: '/diagnoses/{radiographicId}/bulks',
+    handler: handler.postManyDiagnoseHandler,
+    options: {
+      auth: 'radiodiagnostic_jwt',
+    },
+  },
+  {
+    method: 'POST',
+    path: '/diagnoses/{radiographicId}/delete',
+    handler: handler.deleteManualDiagonsesHandler,
+    options: {
+      auth: 'radiodiagnostic_jwt',
+    },
+  },
   {
     method: 'POST',
     path: '/diagnoses/{radiographicId}/system',
@@ -15,35 +32,18 @@ const routes = (handler) => [
       auth: 'radiodiagnostic_jwt',
     },
   },
-  {
-    method: 'POST',
-    path: '/diagnoses/dummy/{radiographicId}',
-    handler: handler.getDummyDiagnosesHandler,
-    options: {
-      auth: 'radiodiagnostic_jwt',
-    },
-  },
+  // {
+  //   method: 'POST',
+  //   path: '/diagnoses/dummy/{radiographicId}',
+  //   handler: handler.getDummyDiagnosesHandler,
+  //   options: {
+  //     auth: 'radiodiagnostic_jwt',
+  //   },
+  // },
   {
     method: 'POST',
     path: '/diagnoses/{diagnosaId}/verificator',
     handler: handler.updateVerificatorDiagnoseHandler,
-    options: {
-      auth: 'radiodiagnostic_jwt',
-    },
-  },
-  // New ardian
-  {
-    method: 'POST',
-    path: '/diagnoses/{radiographicId}/bulks',
-    handler: handler.postManyDiagnoseHandler,
-    options: {
-      auth: 'radiodiagnostic_jwt',
-    },
-  },
-  {
-    method: 'POST',
-    path: '/diagnoses/{radiographicId}/delete',
-    handler: handler.deleteManualDiagonsesHandler,
     options: {
       auth: 'radiodiagnostic_jwt',
     },
