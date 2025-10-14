@@ -158,7 +158,7 @@ class DiagnosesService {
         new Date(),
       );
 
-      const placeholders = Array.from({ length: 10 }, (_, i) => `$${baseIndex + i + 1}`);
+      const placeholders = Array.from({ length: 9 }, (_, i) => `$${baseIndex + i + 1}`);
       return `(${placeholders.join(', ')})`;
     });
 
