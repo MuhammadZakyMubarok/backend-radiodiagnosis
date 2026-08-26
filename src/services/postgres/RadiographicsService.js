@@ -528,6 +528,20 @@ class RadiographicsService {
       throw new AuthenticationError('Anda tidak memilki akeses');
     }
   }
+
+  async getNextSequenceNumber(patientId) {
+    const query = {
+      text: 'SELECT count(id) FROM radiographics WHERE patient_id = $1',
+      values: [patientId],
+    };
+
+    const result = await this._pool.query(query);
+
+    const count = parseInt(result.rows[0].count, 10);
+    const nextNumber = count + 1;
+    
+    return String(nextNumber).padStart(3, '0');
+  }
 }
 
 module.exports = RadiographicsService;
