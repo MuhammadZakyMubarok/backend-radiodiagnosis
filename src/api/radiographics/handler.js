@@ -3,11 +3,13 @@
 const excelJS = require('exceljs');
 
 class RadiographicsHandler {
-  constructor(service, pictureService, validator, pictureValidator) {
+  constructor(service, pictureService, validator, pictureValidator, patientsService) {
     this._service = service;
     this._pictureService = pictureService;
     this._validator = validator;
     this._pictureValidator = pictureValidator;
+
+    this._patientsService = patientsService;
 
     this.postRadiographicHandler = this.postRadiographicHandler.bind(this);
     this.getAllRadiographicsUserHandler = this.getAllRadiographicsUserHandler.bind(this);
@@ -29,9 +31,48 @@ class RadiographicsHandler {
     this.updateRadiographicStatusHandler = this.updateRadiographicStatusHandler.bind(this);
   }
 
+  // async postRadiographicHandler({ payload, auth, params }, h) {
+  //   try {
+  //     const { id: credentialId } = auth.credentials;
+  //     console.log('🔥 Radiographics HANDLER DIPANGGIL');
+  //     await this._service.verifyUserAccessRadiographer(credentialId);
+
+  //     const { patientId } = params;
+  //     const { panoramikPicture } = payload;
+  //     const { radiographerId } = payload;
+
+  //     this._pictureValidator.validatePictureHeaders(
+  //       panoramikPicture.hapi.headers,
+  //     );
+
+  //     const filename = await this._pictureService.writeFile(
+  //       panoramikPicture,
+  //       panoramikPicture.hapi,
+  //     );
+  //     const pictureUrl = `/upload/pictures/${filename}`;
+
+  //     const radiographicId = await this._service.addRadiographic(
+  //       pictureUrl,
+  //       patientId,
+  //       radiographerId,
+  //     );
+
+  //     const response = h.response({
+  //       status: 'success',
+  //       message: 'Radiografi berhasil ditambahkan',
+  //       data: radiographicId,
+  //     });
+  //     response.code(201);
+  //     return response;
+  //   } catch (error) {
+  //     return error;
+  //   }
+  // }
+
   async postRadiographicHandler({ payload, auth, params }, h) {
     try {
       const { id: credentialId } = auth.credentials;
+      console.log('🔥 Radiographics HANDLER DIPANGGIL');
       await this._service.verifyUserAccessRadiographer(credentialId);
 
       const { patientId } = params;
@@ -42,10 +83,27 @@ class RadiographicsHandler {
         panoramikPicture.hapi.headers,
       );
 
+      const patient = await this._patientsService.getPatientById(patientId);
+      const medicNumber = patient.medic_number;
+
+      const dateNow = new Date()
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, '');
+
+      const sequence = await this._service.getNextSequenceNumber(patientId);
+
+      const newFilename = `${medicNumber}_${dateNow}_${sequence}.jpg`;
+
+      const meta = {
+        filename: newFilename,
+      };
+
       const filename = await this._pictureService.writeFile(
         panoramikPicture,
-        panoramikPicture.hapi,
+        meta,
       );
+
       const pictureUrl = `/upload/pictures/${filename}`;
 
       const radiographicId = await this._service.addRadiographic(
