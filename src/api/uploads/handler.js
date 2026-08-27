@@ -1,9 +1,12 @@
 class UploadsHandler {
-  constructor(service, validator) {
-    this._service = service;
+  constructor(validator, patientsService, radiographicsService, storageService) {
+    // this._service = service;
     this._validator = validator;
-
     this.postUploadPictureHandler = this.postUploadPictureHandler.bind(this);
+
+    this._patientsService = patientsService;
+    this._radiographicsService = radiographicsService;
+    this._storageService = storageService;
   }
 
   // async postUploadPictureHandler({ payload }, h) {

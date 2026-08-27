@@ -145,10 +145,19 @@ const init = async () => {
         validator: AuthenticationsValidator,
       },
     },
+    // {
+    //   plugin: uploads,
+    //   options: {
+    //     service: storageService,
+    //     validator: UploadsValidator,
+    //   },
+    // },
     {
       plugin: uploads,
       options: {
-        service: storageService,
+        patientsService,
+        radiographicsService,
+        storageService,
         validator: UploadsValidator,
       },
     },
