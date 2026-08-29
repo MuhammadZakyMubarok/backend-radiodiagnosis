@@ -1,13 +1,11 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-inner-declarations */
 const excelJS = require('exceljs');
-const fs = require('fs/promises');
-const path = require('path');
 
 class RadiographicsHandler {
-  constructor(service, pictureService, validator, pictureValidator, patientsService) {
+  constructor(service, storageService, validator, pictureValidator, patientsService) {
     this._service = service;
-    this._pictureService = pictureService;
+    this._storageService = storageService;
     this._validator = validator;
     this._pictureValidator = pictureValidator;
 
@@ -47,7 +45,7 @@ class RadiographicsHandler {
   //       panoramikPicture.hapi.headers,
   //     );
 
-  //     const filename = await this._pictureService.writeFile(
+  //     const filename = await this._storageService.writeFile(
   //       panoramikPicture,
   //       panoramikPicture.hapi,
   //     );
@@ -101,7 +99,7 @@ class RadiographicsHandler {
         filename: newFilename,
       };
 
-      const filename = await this._pictureService.writeFile(
+      const filename = await this._storageService.writeFile(
         panoramikPicture,
         meta,
       );
@@ -353,7 +351,7 @@ class RadiographicsHandler {
         panoramikPicture.hapi.headers,
       );
 
-      const filename = await this._pictureService.writeFile(
+      const filename = await this._storageService.writeFile(
         panoramikPicture,
         panoramikPicture.hapi,
       );
@@ -528,7 +526,7 @@ class RadiographicsHandler {
       const pictureUrl = await this._service.getRadiographicPathById(radiographicId);
 
       if (pictureUrl) {
-        await this._pictureService.deleteFile(pictureUrl);
+        await this._storageService.deleteFile(pictureUrl);
       }
 
       const radiographic = await this._service.deleteRadiographicById(
@@ -544,18 +542,6 @@ class RadiographicsHandler {
       return response;
     } catch (error) {
       return error;
-    }
-  }
-
-// eslint-disable-next-line class-methods-use-this
-  async deleteFile(pictureUrl) {
-    try {
-      const filename = pictureUrl.split('/').pop();
-      const filePath = path.join(process.cwd(), 'src/api/uploads/file/pictures', filename);
-      await fs.unlink(filePath);
-      console.log(`🔥 File ${filename} berhasil dihapus dari direktori`);
-    } catch (error) {
-      console.error(`⚠️ Gagal menghapus file fisik: ${error.message}`);
     }
   }
 }
