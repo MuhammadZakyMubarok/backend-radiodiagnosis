@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-inner-declarations */
 const excelJS = require('exceljs');
+const fs = require('fs/promises');
+const path = require('path');
 
 class RadiographicsHandler {
   constructor(service, pictureService, validator, pictureValidator, patientsService) {
@@ -523,6 +525,12 @@ class RadiographicsHandler {
       const { id: credentialId } = auth.credentials;
 
       await this._service.verifyUserAccessRadiographer(credentialId);
+      const pictureUrl = await this._service.getRadiographicPathById(radiographicId);
+
+      if (pictureUrl) {
+        await this._pictureService.deleteFile(pictureUrl);
+      }
+
       const radiographic = await this._service.deleteRadiographicById(
         radiographicId,
       );
@@ -536,6 +544,18 @@ class RadiographicsHandler {
       return response;
     } catch (error) {
       return error;
+    }
+  }
+
+// eslint-disable-next-line class-methods-use-this
+  async deleteFile(pictureUrl) {
+    try {
+      const filename = pictureUrl.split('/').pop();
+      const filePath = path.join(process.cwd(), 'src/api/uploads/file/pictures', filename);
+      await fs.unlink(filePath);
+      console.log(`🔥 File ${filename} berhasil dihapus dari direktori`);
+    } catch (error) {
+      console.error(`⚠️ Gagal menghapus file fisik: ${error.message}`);
     }
   }
 }

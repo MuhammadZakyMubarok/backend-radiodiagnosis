@@ -331,6 +331,22 @@ class RadiographicsService {
     return result.rows[0];
   }
 
+  async getRadiographicPathById(id) {
+    const query = {
+      text: 'SELECT panoramik_picture FROM histories WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('gagal mengambil path gambar');
+    }
+    const pictureUrl = result.rows[0].panoramik_picture;
+    console.log(`path delete: ${pictureUrl}`);
+    return pictureUrl;
+  }
+
   async editRadiographicDoctor(radiographicId, { doctorId, historyId }) {
     const query = {
       text: 'UPDATE histories SET doctor_id = $1 WHERE id = $2 RETURNING id',
