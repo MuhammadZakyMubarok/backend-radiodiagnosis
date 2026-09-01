@@ -27,8 +27,9 @@ class StorageService {
   async deleteFile(pictureUrl) {
     try {
       const filename = pictureUrl.split('/').pop();
-      const filePath = path.join(process.cwd(), 'src/api/uploads/file/pictures', filename);
-      await fs.unlink(filePath);
+      // const filePath = path.join(process.cwd(), 'src/api/uploads/file/pictures', filename);
+      const filePath = path.join(this._folder, filename);
+      await fs.promises.unlink(filePath);
       console.log(`🔥 File ${filename} berhasil dihapus dari direktori`);
     } catch (error) {
       console.error(`⚠️ Gagal menghapus file fisik: ${error.message}`);

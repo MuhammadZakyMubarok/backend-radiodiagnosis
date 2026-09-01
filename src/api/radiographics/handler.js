@@ -351,9 +351,19 @@ class RadiographicsHandler {
         panoramikPicture.hapi.headers,
       );
 
+      const oldPictureUrl = await this._service.getRadiographicPathById(radiographicId);
+
+      if (oldPictureUrl) {
+        await this._storageService.deleteFile(oldPictureUrl);
+      }
+
+      const oldPictureName = oldPictureUrl.split('/').pop();
+
       const filename = await this._storageService.writeFile(
         panoramikPicture,
-        panoramikPicture.hapi,
+        {
+          filename: oldPictureName,
+        },
       );
       const pictureUrl = `/upload/pictures/${filename}`;
 
